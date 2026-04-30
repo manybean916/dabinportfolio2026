@@ -68,7 +68,7 @@ export const Intro = ({ lang }: IntroProps) => {
             </div>
             <div className="space-y-2">
               <span className="text-xs font-bold tracking-widest uppercase opacity-40">{lang === 'ko' ? '전문 분야' : 'Focus'}</span>
-              <p className="text-lg font-medium text-gray-700">{lang === 'ko' ? 'UX 리서치, 제품 디자인' : 'UX Research, Product'}</p>
+              <p className="text-lg font-medium text-gray-700">{lang === 'ko' ? 'UX 리서치, UI 디자인' : 'UX Research, UI Design'}</p>
             </div>
           </div>
         </motion.div>
