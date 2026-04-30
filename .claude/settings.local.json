@@ -6,7 +6,8 @@
       "PowerShell(Get-Command pnpm -ErrorAction SilentlyContinue)",
       "PowerShell($npm = Get-Command npm -ErrorAction SilentlyContinue; $node = Get-Command node -ErrorAction SilentlyContinue; $pnpm = Get-Command pnpm -ErrorAction SilentlyContinue; \"npm: $\\($npm.Source\\)\"; \"node: $\\($node.Source\\)\"; \"pnpm: $\\($pnpm.Source\\)\")",
       "PowerShell(Get-ChildItem \"C:\\\\Program Files\\\\nodejs\" -ErrorAction SilentlyContinue | Select-Object Name; Get-ChildItem \"$env:APPDATA\\\\npm\" -ErrorAction SilentlyContinue | Select-Object Name; Get-ChildItem \"$env:LOCALAPPDATA\\\\Programs\\\\nodejs\" -ErrorAction SilentlyContinue | Select-Object Name)",
-      "PowerShell($env:PATH -split \";\" | Where-Object { $_ -match \"node|npm|nvm\" })"
+      "PowerShell($env:PATH -split \";\" | Where-Object { $_ -match \"node|npm|nvm\" })",
+      "WebFetch(domain:35.232.179.230)"
     ]
   }
 }
