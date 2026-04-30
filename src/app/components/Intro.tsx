@@ -64,7 +64,7 @@ export const Intro = ({ lang }: IntroProps) => {
             </div>
             <div className="space-y-2">
               <span className="text-xs font-bold tracking-widest uppercase opacity-40">{lang === 'ko' ? '연락처' : 'Contact'}</span>
-              <p className="text-lg font-medium text-gray-700">hello@dabin.com</p>
+              <p className="text-lg font-medium text-gray-700">yoondabin916@gmail.com</p>
             </div>
             <div className="space-y-2">
               <span className="text-xs font-bold tracking-widest uppercase opacity-40">{lang === 'ko' ? '전문 분야' : 'Focus'}</span>
