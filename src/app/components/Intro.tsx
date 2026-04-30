@@ -46,7 +46,7 @@ export const Intro = ({ lang }: IntroProps) => {
               style={{ fontFamily: 'var(--font-pretendard)' }}
             >
               {lang === 'ko' ? (
-                <>브랜드의 아이덴티티를 유연한 인터랙션과<br /> 감각적인 UX로 시각화하는 디자이너,<br/><span className="text-stone-400">윤다빈</span> 입니다.</>
+                <>브랜드의 IDENTITY를 유연한 인터랙션과<br /> 감각적인 UX로 시각화하는 디자이너,<br/><span className="text-stone-400">윤다빈</span> 입니다.</>
               ) : (
                 <>Visualizing brand identity with<br /> flexible interactions and sensible UX,<br/>I am <span className="text-stone-400">Dabin Yoon</span>.</>
               )}
