@@ -4,7 +4,6 @@ import { Hero } from './components/Hero';
 import { Intro } from './components/Intro';
 import { PortfolioGrid } from './components/PortfolioGrid';
 import { ServicesSection } from './components/ServicesSection';
-import { PpossongSection } from './components/PpossongSection';
 import { Footer } from './components/Footer';
 import { AddProjectModal } from './components/AddProjectModal';
 import { LoginModal } from './components/LoginModal';
@@ -324,7 +323,6 @@ const AppContent = () => {
             onDelete={handleDeleteProject}
           />
         )}
-        <PpossongSection lang={lang} />
         <ServicesSection lang={lang} services={services} />
       </main>
       <Footer lang={lang} />
