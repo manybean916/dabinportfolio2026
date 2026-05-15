@@ -16,7 +16,6 @@ import projectImg2 from "../imports/스크린샷(5).png";
 import projectImg3 from "../imports/인터뷰실습.jpg";
 
 const AppContent = () => {
-  // Adding a comment to trigger HMR reload for App.tsx
   const { isAdmin } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -26,7 +25,6 @@ const AppContent = () => {
   
   const toggleLang = () => setLang(prev => prev === 'ko' ? 'en' : 'ko');
   
-  // Initial projects as a fallback
   const initialProjects = [
     {
       id: "project:1",
@@ -101,15 +99,10 @@ const AppContent = () => {
           data.push({ id: childSnapshot.key, ...childSnapshot.val() });
         });
         
-        // updatedAt을 기준으로 내림차순 정렬, 없을 경우 Firebase 고유 ID 기준으로 내림차순 정렬 (최신이 먼저 오도록)
         data.sort((a, b) => {
           const timeA = a.updatedAt || 0;
           const timeB = b.updatedAt || 0;
-          
-          if (timeA !== timeB) {
-            return timeB - timeA;
-          }
-          // updatedAt이 없는 이전 데이터들에 대해서는 ID(키) 문자열 비교 (Firebase push key는 생성시간을 포함)
+          if (timeA !== timeB) return timeB - timeA;
           if (b.id > a.id) return 1;
           if (b.id < a.id) return -1;
           return 0;
@@ -117,20 +110,9 @@ const AppContent = () => {
         
         setProjects(data);
       } else {
-        // DB가 비어있을 경우 기존 데이터를 Realtime Database로 마이그레이션
-        console.log("No projects found in Realtime DB. Migrating initial data...");
-        const newProjects: any[] = [];
-        let baseTime = Date.now();
-        for (const proj of initialProjects) {
-          const { id, ...projData } = proj;
-          // 초기 데이터도 시간순 정렬을 위해 임의의 timestamp 부여 (역순으로 감소)
-          const projectWithTime = { ...projData, createdAt: baseTime, updatedAt: baseTime };
-          const newProjectRef = push(ref(db, "projects"));
-          await set(newProjectRef, projectWithTime);
-          newProjects.push({ id: newProjectRef.key, ...projectWithTime });
-          baseTime -= 1000; 
-        }
-        setProjects(newProjects);
+        // DB가 비어있을 경우 그냥 빈 배열로 유지 (자동 덮어쓰기 하지 않음)
+        console.log("No projects found in DB.");
+        setProjects([]);
       }
     } catch (error) {
       console.error("Error fetching projects, falling back to local state:", error);
@@ -158,9 +140,7 @@ const AppContent = () => {
             const targetElement = document.getElementById(targetId.substring(1));
             if (targetElement) {
               e.preventDefault();
-              targetElement.scrollIntoView({
-                behavior: 'smooth'
-              });
+              targetElement.scrollIntoView({ behavior: 'smooth' });
             }
           }
         } catch (err) {
@@ -170,9 +150,7 @@ const AppContent = () => {
     };
 
     document.addEventListener('click', handleAnchorClick);
-    return () => {
-      document.removeEventListener('click', handleAnchorClick);
-    };
+    return () => { document.removeEventListener('click', handleAnchorClick); };
   }, []);
 
   const handleAddProject = async (newProject: any) => {
@@ -184,11 +162,9 @@ const AppContent = () => {
     try {
       const now = Date.now();
       if (editingIndex !== null) {
-        // Edit existing project
         const projectId = projects[editingIndex].id;
         const updatedProject = { ...newProject, updatedAt: now };
         
-        // 기존의 createdAt 값을 유지합니다
         if (projects[editingIndex].createdAt) {
           updatedProject.createdAt = projects[editingIndex].createdAt;
         }
@@ -203,7 +179,6 @@ const AppContent = () => {
         const updated = [...projects];
         updated[editingIndex] = { id: projectId, ...updatedProject };
         
-        // 수정 시에도 최신 항목이 위로 오도록 재정렬 (updatedAt 기준, 또는 키 기준)
         updated.sort((a, b) => {
           const timeA = a.updatedAt || 0;
           const timeB = b.updatedAt || 0;
@@ -216,7 +191,6 @@ const AppContent = () => {
         setProjects(updated);
         toast.success(lang === 'ko' ? '프로젝트가 성공적으로 수정되었습니다.' : 'Project successfully updated.');
       } else {
-        // Add new project
         let newId = `local-${now}`;
         const newProjectWithTime = { ...newProject, createdAt: now, updatedAt: now };
         try {
@@ -262,7 +236,11 @@ const AppContent = () => {
     }
     
     const projectToDelete = projects[index];
-    if (window.confirm(lang === 'ko' ? '정말 이 프로젝트를 삭제하시겠습니까?' : 'Are you sure you want to delete this project?')) {
+    const confirmMsg = lang === 'ko'
+      ? `"${projectToDelete.title}" 프로젝트를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`
+      : `Are you sure you want to delete "${projectToDelete.title}"?\nThis cannot be undone.`;
+
+    if (window.confirm(confirmMsg)) {
       try {
         try {
           await remove(ref(db, `projects/${projectToDelete.id}`));
@@ -327,7 +305,6 @@ const AppContent = () => {
       </main>
       <Footer lang={lang} />
       <Toaster position="bottom-right" expand={false} richColors />
-
 
       <AddProjectModal 
         isOpen={isModalOpen} 
