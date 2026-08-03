@@ -40,7 +40,7 @@ export const Hero = ({ name, imageUrl, lang }: HeroProps) => {
           initial={{ opacity: 0, scale: 0.95, y: 40 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-          className="w-full relative aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-[40px] bg-stone-100 ring-1 ring-black/5"
+          className="w-full max-w-4xl relative aspect-[16/9] md:aspect-[21/10] max-h-[380px] overflow-hidden rounded-[40px] bg-stone-100 ring-1 ring-black/5"
         >
           <ImageWithFallback
             src="https://images.unsplash.com/photo-1612123912968-5f6e964e8ea5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtaW5pbWFsaXN0JTIwdXglMjB1aSUyMGRlc2lnbmVyJTIwd29ya3NwYWNlJTIwYXBwbGUlMjBzdHVkaW8lMjBkaXNwbGF5JTIwYmVpZ2UlMjBhZXN0aGV0aWN8ZW58MXx8fHwxNzc2NjYzODg3fDA&ixlib=rb-4.1.0&q=80&w=1080"

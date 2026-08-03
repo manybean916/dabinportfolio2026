@@ -8,40 +8,23 @@ interface IntroProps {
 export const Intro = ({ lang }: IntroProps) => {
   return (
     <section id="about" className="py-24 px-6 md:px-0">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="w-full min-h-[700px] flex flex-col md:flex-row items-center gap-12 md:gap-24 relative overflow-hidden rounded-[80px] bg-[#F5F3EF] p-12 md:p-24"
+        className="w-full flex flex-col items-center relative overflow-hidden rounded-[80px] bg-[#F5F3EF] p-12 md:p-24"
       >
-        {/* Left: Profile Image Placeholder */}
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.8 }}
-          className="w-full md:w-2/5 aspect-[4/5] relative z-10"
-        >
-          <div className="w-full h-full overflow-hidden rounded-[60px] shadow-2xl ring-1 ring-black/5">
-            
-          </div>
-          {/* Decorative tag */}
-          <div className="absolute -bottom-6 -right-6 bg-white px-8 py-4 rounded-full shadow-xl rotate-3">
-            <span className="text-sm font-bold text-gray-900 tracking-wider">DESIGNER</span>
-          </div>
-        </motion.div>
-
-        {/* Right: Introduction Content */}
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="w-full md:w-3/5 z-10 space-y-12"
+          className="w-full max-w-3xl z-10 space-y-12"
         >
           <div className="space-y-6">
             <p className="text-sm font-bold tracking-[0.2em] text-stone-400 uppercase">
               {lang === 'ko' ? '소개' : 'About Me'}
             </p>
-            <h2 
+            <h2
               className="font-bold text-gray-900 leading-tight text-[32px] md:text-[42px]"
               style={{ fontFamily: 'var(--font-pretendard)' }}
             >

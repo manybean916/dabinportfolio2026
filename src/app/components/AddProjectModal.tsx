@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Upload, Plus, Edit2, Link as LinkIcon, Calendar, Users, Tag, BookOpen, FileText, Languages } from 'lucide-react';
+import { X, Upload, Plus, Edit2, Calendar, Users, Tag, BookOpen, FileText, Languages, PlayCircle, Github } from 'lucide-react';
 
 interface ProjectData {
   id?: string;
@@ -9,7 +9,8 @@ interface ProjectData {
   category: string;
   imageUrl: string;
   description: string;
-  link?: string;
+  prototypeLink?: string;
+  githubLink?: string;
   date?: string;
   collaborators?: string;
   keywords?: string[];
@@ -40,8 +41,10 @@ const t = (lang: 'ko' | 'en') => ({
   categoryPh: lang === 'ko' ? '예: UX Research, UI Design' : 'e.g., UX Research, UI Design',
   image: lang === 'ko' ? '썸네일 이미지 URL' : 'Thumbnail Image URL',
   imagePh: lang === 'ko' ? 'https://images.unsplash.com/...' : 'https://images.unsplash.com/...',
-  link: lang === 'ko' ? '연결할 링크 (URL)' : 'Project Link (URL)',
-  linkPh: lang === 'ko' ? 'https://behance.net/...' : 'https://behance.net/...',
+  prototypeLink: lang === 'ko' ? '프로토타입 링크 (URL)' : 'Prototype Link (URL)',
+  prototypeLinkPh: lang === 'ko' ? 'https://figma.com/proto/...' : 'https://figma.com/proto/...',
+  githubLink: lang === 'ko' ? '깃헙 주소 (URL)' : 'GitHub URL',
+  githubLinkPh: 'https://github.com/...',
   date: lang === 'ko' ? '날짜 (비어있으면 오늘 날짜로 자동 입력)' : 'Date (auto-fills today if empty)',
   collaborators: lang === 'ko' ? '공동작업자 (비어있으면 개인 작업)' : 'Collaborators (leave empty for solo)',
   collaboratorsPh: lang === 'ko' ? '예: 홍길동, 김철수' : 'e.g., John Doe, Jane Smith',
@@ -65,7 +68,8 @@ const emptyForm = {
   category: '',
   imageUrl: '',
   description: '',
-  link: '',
+  prototypeLink: '',
+  githubLink: '',
   date: '',
   collaborators: '',
   keywords: [] as string[],
@@ -109,7 +113,8 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
         category: initialData.category || '',
         imageUrl: initialData.imageUrl || '',
         description: initialData.description || '',
-        link: initialData.link || '',
+        prototypeLink: initialData.prototypeLink || '',
+        githubLink: initialData.githubLink || '',
         date: initialData.date || '',
         collaborators: initialData.collaborators || '',
         keywords: Array.isArray(initialData.keywords) ? initialData.keywords : [],
@@ -265,17 +270,32 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1">{L.link}</label>
+                  <label className="text-sm font-bold text-gray-900 ml-1 flex items-center gap-2"><PlayCircle className="size-4" />{L.prototypeLink}</label>
                   <div className="relative">
                     <input
                       type="url"
-                      value={formData.link}
-                      onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                      placeholder={L.linkPh}
+                      value={formData.prototypeLink}
+                      onChange={(e) => setFormData({ ...formData, prototypeLink: e.target.value })}
+                      placeholder={L.prototypeLinkPh}
                       className={`${inputCls} pr-12`}
                       style={{ fontFamily: 'var(--font-pretendard)' }}
                     />
-                    <LinkIcon className="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
+                    <PlayCircle className="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-gray-900 ml-1 flex items-center gap-2"><Github className="size-4" />{L.githubLink}</label>
+                  <div className="relative">
+                    <input
+                      type="url"
+                      value={formData.githubLink}
+                      onChange={(e) => setFormData({ ...formData, githubLink: e.target.value })}
+                      placeholder={L.githubLinkPh}
+                      className={`${inputCls} pr-12`}
+                      style={{ fontFamily: 'var(--font-pretendard)' }}
+                    />
+                    <Github className="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
 
