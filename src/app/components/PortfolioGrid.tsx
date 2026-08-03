@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Plus, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { Plus, MoreVertical, Edit2, Trash2, PlayCircle, Github } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface Project {
@@ -9,7 +9,8 @@ interface Project {
   titleEn?: string;
   category: string;
   imageUrl: string;
-  link?: string;
+  prototypeLink?: string;
+  githubLink?: string;
   date?: string;
   collaborators?: string;
   keywords?: string[];
@@ -47,16 +48,15 @@ const ProjectCard = ({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: (index % 3) * 0.15 }}
-      className="group cursor-pointer relative"
+      className="group relative"
     >
-      <div className="relative aspect-[4/3] rounded-[32px] mb-6 bg-gray-100 shadow-sm ring-1 ring-black/5 hover:ring-black/10 transition-shadow">
-        <div className="absolute inset-0 rounded-[32px] overflow-hidden">
+      <div className="relative h-44 sm:h-52 lg:h-56 rounded-[24px] mb-4 bg-gray-100 shadow-sm ring-1 ring-black/5 hover:ring-black/10 transition-shadow">
+        <div className="absolute inset-0 rounded-[24px] overflow-hidden">
           <ImageWithFallback
             src={project.imageUrl}
             alt={project.title}
             key={project.imageUrl} // Key added to force re-render when URL changes
             className="w-full h-full object-cover transform transition-all duration-700 group-hover:scale-105"
-            onClick={() => project.link && (window.location.href = project.link)}
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none" />
         </div>
@@ -109,7 +109,7 @@ const ProjectCard = ({
           </div>
         )}
       </div>
-      <div className="space-y-2 px-2" onClick={() => project.link && (window.location.href = project.link)}>
+      <div className="space-y-2 px-2">
         <h3
           className="text-xl font-bold tracking-tight text-gray-900"
           style={{ fontFamily: 'var(--font-pretendard)' }}
@@ -142,6 +142,34 @@ const ProjectCard = ({
         )}
         {project.workNotes && (
           <p className="text-sm text-stone-500 pt-1 line-clamp-2">{project.workNotes}</p>
+        )}
+        {(project.prototypeLink || project.githubLink) && (
+          <div className="flex flex-wrap gap-2 pt-2">
+            {project.prototypeLink && (
+              <a
+                href={project.prototypeLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-stone-900 text-white rounded-full text-xs font-bold hover:bg-black transition-colors"
+              >
+                <PlayCircle className="size-3.5" />
+                {lang === 'ko' ? '프로토타입' : 'Prototype'}
+              </a>
+            )}
+            {project.githubLink && (
+              <a
+                href={project.githubLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-stone-100 text-stone-700 rounded-full text-xs font-bold hover:bg-stone-200 transition-colors"
+              >
+                <Github className="size-3.5" />
+                GitHub
+              </a>
+            )}
+          </div>
         )}
       </div>
     </motion.div>
@@ -201,7 +229,7 @@ export const PortfolioGrid = ({ projects, onAddClick, onEdit, onDelete, lang }: 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
         {projects.map((project, index) => (
           <ProjectCard 
             key={project.title + index} 
