@@ -21,7 +21,7 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#E7E6E4] flex items-center justify-center text-[#1A1512]/40 font-bold">
+      <div className="min-h-screen bg-[#FAF9F7] flex items-center justify-center text-[#1A1512]/40 font-bold">
         {lang === 'ko' ? '로딩 중...' : 'Loading...'}
       </div>
     );
@@ -29,7 +29,7 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-[#E7E6E4] flex flex-col items-center justify-center gap-8 px-6 text-center">
+      <div className="min-h-screen bg-[#FAF9F7] flex flex-col items-center justify-center gap-8 px-6 text-center">
         <p
           className="text-3xl italic text-[#1A1512]"
           style={{ fontFamily: 'var(--font-display)' }}
@@ -38,7 +38,7 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
         </p>
         <Link
           to="/"
-          className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#810000] text-[#E7E6E4] rounded-full text-sm font-bold hover:bg-[#1A1512] transition-colors"
+          className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#810000] text-[#FAF9F7] rounded-full text-sm font-bold hover:bg-[#1A1512] transition-colors"
         >
           <ArrowLeft className="size-4" />
           Back to work
@@ -65,10 +65,10 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
 
   return (
     <div
-      className="min-h-screen bg-[#E7E6E4] text-[#1A1512] selection:bg-[#810000] selection:text-[#E7E6E4]"
+      className="min-h-screen bg-[#FAF9F7] text-[#1A1512] selection:bg-[#810000] selection:text-[#FAF9F7]"
       style={{ fontFamily: 'var(--font-pretendard)' }}
     >
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#E7E6E4]/90 backdrop-blur-md border-b border-[#1A1512]/10">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF9F7]/90 backdrop-blur-md border-b border-[#1A1512]/10">
         <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-20 flex items-center justify-between">
           <Link
             to="/"
@@ -147,7 +147,7 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
                   {lang === 'en' && nextProject.titleEn ? nextProject.titleEn : nextProject.title}
                 </p>
               </div>
-              <span className="shrink-0 flex items-center justify-center size-14 rounded-full border border-[#1A1512]/25 group-hover:bg-[#80605C] group-hover:text-[#E7E6E4] group-hover:border-[#80605C] transition-colors">
+              <span className="shrink-0 flex items-center justify-center size-14 rounded-full border border-[#1A1512]/25 group-hover:bg-[#80605C] group-hover:text-[#FAF9F7] group-hover:border-[#80605C] transition-colors">
                 <ArrowRight className="size-5" />
               </span>
             </Link>

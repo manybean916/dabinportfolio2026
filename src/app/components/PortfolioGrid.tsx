@@ -49,14 +49,14 @@ const ProjectCard = ({
               e.stopPropagation();
               setShowMenu(!showMenu);
             }}
-            className="p-2 bg-[#E7E6E4] hover:bg-white rounded-full shadow-md transition-colors text-[#1A1512]"
+            className="p-2 bg-[#FAF9F7] hover:bg-white rounded-full shadow-md transition-colors text-[#1A1512]"
           >
             <MoreVertical className="size-4" />
           </button>
 
           {showMenu && (
             <div
-              className="absolute right-0 mt-2 w-36 bg-[#E7E6E4] shadow-xl py-2 z-40 border border-[#1A1512]/10"
+              className="absolute right-0 mt-2 w-36 bg-[#FAF9F7] shadow-xl py-2 z-40 border border-[#1A1512]/10"
               onMouseLeave={() => setShowMenu(false)}
             >
               <button
@@ -166,7 +166,7 @@ export const PortfolioGrid = ({ projects, onAddClick, onEdit, onDelete, lang }: 
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             onClick={onAddClick}
-            className="flex items-center gap-2 px-6 py-3 bg-[#1A1512] text-[#E7E6E4] rounded-full text-sm font-bold hover:bg-[#80605C] transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-[#1A1512] text-[#FAF9F7] rounded-full text-sm font-bold hover:bg-[#80605C] transition-colors"
           >
             <Plus className="size-4" />
             {lang === 'ko' ? '새 프로젝트' : 'Add Project'}

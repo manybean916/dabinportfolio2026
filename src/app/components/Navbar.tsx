@@ -37,12 +37,12 @@ export const Navbar = ({ lang, onToggleLang, onLoginClick }: NavbarProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, ease: 'easeInOut' }}
-            className="fixed inset-0 z-[999] bg-[#E7E6E4] pointer-events-none"
+            className="fixed inset-0 z-[999] bg-[#FAF9F7] pointer-events-none"
           />
         )}
       </AnimatePresence>
 
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#E7E6E4]/90 backdrop-blur-md border-b border-[#1A1512]/10">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FAF9F7]/90 backdrop-blur-md border-b border-[#1A1512]/10">
         <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-20 flex items-center justify-between gap-6">
           <a
             href="#home"
@@ -86,7 +86,7 @@ export const Navbar = ({ lang, onToggleLang, onLoginClick }: NavbarProps) => {
                     {user.displayName || user.email?.split('@')[0]}
                   </span>
                   {isAdmin && (
-                    <span className="px-1.5 py-0.5 bg-[#810000] text-[#E7E6E4] text-[10px] rounded font-bold uppercase tracking-wider">
+                    <span className="px-1.5 py-0.5 bg-[#810000] text-[#FAF9F7] text-[10px] rounded font-bold uppercase tracking-wider">
                       Admin
                     </span>
                   )}
@@ -102,7 +102,7 @@ export const Navbar = ({ lang, onToggleLang, onLoginClick }: NavbarProps) => {
             ) : (
               <button
                 onClick={onLoginClick}
-                className="px-5 py-2 rounded-full border border-[#1A1512]/25 text-xs font-bold text-[#1A1512] hover:bg-[#1A1512] hover:text-[#E7E6E4] hover:border-[#1A1512] transition-colors"
+                className="px-5 py-2 rounded-full border border-[#1A1512]/25 text-xs font-bold text-[#1A1512] hover:bg-[#1A1512] hover:text-[#FAF9F7] hover:border-[#1A1512] transition-colors"
               >
                 Login
               </button>

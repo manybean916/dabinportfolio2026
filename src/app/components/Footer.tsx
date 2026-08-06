@@ -6,7 +6,7 @@ export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer id="contact" className="bg-[#80605C] text-[#E7E6E4]">
+    <footer id="contact" className="bg-[#80605C] text-[#FAF9F7]">
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 py-28 md:py-36">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -15,7 +15,7 @@ export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           className="text-center"
         >
-          <p className="text-[11px] font-bold tracking-[0.35em] uppercase text-[#E7E6E4]/60">
+          <p className="text-[11px] font-bold tracking-[0.35em] uppercase text-[#FAF9F7]/60">
             Get in touch
           </p>
 
@@ -37,14 +37,14 @@ export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
             href="https://mail.google.com/mail/?view=cm&fs=1&to=yoondabin916@gmail.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-3 mt-12 px-8 py-4 bg-[#E7E6E4] text-[#810000] rounded-full text-sm md:text-base font-bold hover:bg-[#1A1512] hover:text-[#E7E6E4] transition-colors"
+            className="group inline-flex items-center gap-3 mt-12 px-8 py-4 bg-[#FAF9F7] text-[#810000] rounded-full text-sm md:text-base font-bold hover:bg-[#1A1512] hover:text-[#FAF9F7] transition-colors"
           >
             yoondabin916@gmail.com
             <ArrowUpRight className="size-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
         </motion.div>
 
-        <div className="mt-28 pt-10 border-t border-[#E7E6E4]/25 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="mt-28 pt-10 border-t border-[#FAF9F7]/25 flex flex-col md:flex-row items-center justify-between gap-8">
           <span
             className="text-2xl md:text-3xl italic tracking-[0.06em]"
             style={{ fontFamily: 'var(--font-display)' }}
@@ -57,7 +57,7 @@ export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
               href="https://www.instagram.com/toomanybean?igsh=MTc5bGlueWRwbzh0eQ%3D%3D&utm_source=qr"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-full border border-[#E7E6E4]/35 hover:bg-[#E7E6E4] hover:text-[#810000] transition-colors"
+              className="p-3 rounded-full border border-[#FAF9F7]/35 hover:bg-[#FAF9F7] hover:text-[#810000] transition-colors"
               aria-label="Instagram"
             >
               <Instagram className="size-5" />
@@ -66,7 +66,7 @@ export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
               href="https://mail.google.com/mail/?view=cm&fs=1&to=yoondabin916@gmail.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-full border border-[#E7E6E4]/35 hover:bg-[#E7E6E4] hover:text-[#810000] transition-colors"
+              className="p-3 rounded-full border border-[#FAF9F7]/35 hover:bg-[#FAF9F7] hover:text-[#810000] transition-colors"
               aria-label="Email"
             >
               <Mail className="size-5" />
@@ -75,14 +75,14 @@ export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
               href="https://github.com/manybean916"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-full border border-[#E7E6E4]/35 hover:bg-[#E7E6E4] hover:text-[#810000] transition-colors"
+              className="p-3 rounded-full border border-[#FAF9F7]/35 hover:bg-[#FAF9F7] hover:text-[#810000] transition-colors"
               aria-label="GitHub"
             >
               <Github className="size-5" />
             </a>
           </div>
 
-          <p className="text-xs text-[#E7E6E4]/60 tracking-wide">
+          <p className="text-xs text-[#FAF9F7]/60 tracking-wide">
             © {currentYear} Yoondabin. All rights reserved.
           </p>
         </div>
