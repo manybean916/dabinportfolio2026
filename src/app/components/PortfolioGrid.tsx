@@ -30,7 +30,7 @@ const ProjectCard = ({
   const [showMenu, setShowMenu] = React.useState(false);
   const { isAdmin } = useAuth();
 
-  const summary = project.description || project.workNotes;
+  const summary = project.description;
 
   return (
     <motion.article

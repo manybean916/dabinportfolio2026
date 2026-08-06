@@ -19,11 +19,6 @@ export interface Project {
   teamType?: 'solo' | 'team';
   createdAt?: number;
   updatedAt?: number;
-  // 이전 데이터 호환용 — 폼에서는 더 이상 편집하지 않는다
-  collaborators?: string;
-  keywords?: string[];
-  subject?: string;
-  workNotes?: string;
 }
 
 interface ProjectsContextType {

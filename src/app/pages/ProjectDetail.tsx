@@ -52,10 +52,7 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
   const labelCls = lang === 'ko'
     ? 'text-xs font-bold'
     : 'text-[11px] font-bold tracking-[0.25em] uppercase';
-  // teamType이 없는 이전 데이터는 공동작업자 유무로 추정한다
-  const isTeam = project.teamType
-    ? project.teamType === 'team'
-    : Boolean(project.collaborators?.trim());
+  const isTeam = project.teamType === 'team';
 
   const meta = [
     { label: lang === 'ko' ? '날짜' : 'Date', value: project.date },

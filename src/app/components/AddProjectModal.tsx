@@ -92,8 +92,7 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
         githubLink: initialData.githubLink || '',
         date: initialData.date || '',
         tools: initialData.tools || '',
-        // 이전 데이터엔 teamType이 없어 공동작업자 유무로 추정한다
-        teamType: initialData.teamType || (initialData.collaborators?.trim() ? 'team' : 'solo'),
+        teamType: initialData.teamType || 'solo',
         description: initialData.description || '',
       });
     } else {
