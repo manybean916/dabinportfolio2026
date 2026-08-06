@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { ProjectThumb, ProjectChips } from './ProjectVisuals';
 import { Plus, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import type { Project } from '../context/ProjectsContext';
@@ -30,7 +30,7 @@ const ProjectCard = ({
   const [showMenu, setShowMenu] = React.useState(false);
   const { isAdmin } = useAuth();
 
-  const summary = project.workNotes || project.description;
+  const summary = project.description;
 
   return (
     <motion.article
@@ -86,15 +86,14 @@ const ProjectCard = ({
         </div>
       )}
 
+      {/* 칩도 링크라서 카드 링크 안에 중첩되지 않도록 영역을 분리한다 */}
       <Link to={`/project/${encodeURIComponent(project.id || '')}`} className="block">
         <div className="relative aspect-[4/5] overflow-hidden bg-[#1A1512]/5">
-          <ImageWithFallback
-            src={project.imageUrl}
-            alt={project.title}
-            key={project.imageUrl}
+          <ProjectThumb
+            project={project}
             className="w-full h-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]"
           />
-          <div className="absolute inset-0 bg-[#1A1512]/0 group-hover:bg-[#1A1512]/25 transition-colors duration-500" />
+          <div className="absolute inset-0 bg-[#1A1512]/0 group-hover:bg-[#1A1512]/25 transition-colors duration-500 pointer-events-none" />
         </div>
 
         <div className="pt-6">
@@ -135,6 +134,8 @@ const ProjectCard = ({
           </div>
         </div>
       </Link>
+
+      <ProjectChips project={project} lang={lang} className="mt-4 px-0" />
     </motion.article>
   );
 };

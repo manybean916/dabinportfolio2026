@@ -1,28 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Upload, Plus, Edit2, Calendar, Users, Tag, BookOpen, FileText, Languages, PlayCircle, Github } from 'lucide-react';
-
-interface ProjectData {
-  id?: string;
-  title: string;
-  titleEn?: string;
-  category: string;
-  imageUrl: string;
-  description: string;
-  prototypeLink?: string;
-  githubLink?: string;
-  date?: string;
-  collaborators?: string;
-  keywords?: string[];
-  subject?: string;
-  workNotes?: string;
-}
+import { X, Upload, Plus, Edit2, Calendar, Wrench, FileText, Languages, PlayCircle, Github, User, Users } from 'lucide-react';
+import type { Project } from '../context/ProjectsContext';
 
 interface AddProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (project: ProjectData) => void;
-  initialData?: ProjectData | null;
+  onAdd: (project: Project) => void;
+  initialData?: Project | null;
   mode?: 'add' | 'edit';
   lang?: 'ko' | 'en';
 }
@@ -30,7 +15,7 @@ interface AddProjectModalProps {
 const t = (lang: 'ko' | 'en') => ({
   editTitle: lang === 'ko' ? '프로젝트 수정' : 'Edit Project',
   addTitle: lang === 'ko' ? '새 프로젝트 추가' : 'Add New Project',
-  title: lang === 'ko' ? '프로젝트 제목 (한국어)' : 'Project Title (Korean)',
+  title: lang === 'ko' ? '프로젝트 제목' : 'Project Title',
   titlePh: lang === 'ko' ? '프로젝트 제목을 입력하세요' : 'Enter project title',
   titleEn: lang === 'ko' ? '영어 제목 (EN 모드에 표시)' : 'English Title (shown in EN mode)',
   titleEnPh: 'English title',
@@ -40,47 +25,39 @@ const t = (lang: 'ko' | 'en') => ({
   category: lang === 'ko' ? '카테고리' : 'Category',
   categoryPh: lang === 'ko' ? '예: UX Research, UI Design' : 'e.g., UX Research, UI Design',
   image: lang === 'ko' ? '썸네일 이미지 URL' : 'Thumbnail Image URL',
-  imagePh: lang === 'ko' ? 'https://images.unsplash.com/...' : 'https://images.unsplash.com/...',
-  prototypeLink: lang === 'ko' ? '프로토타입 링크 (URL)' : 'Prototype Link (URL)',
-  prototypeLinkPh: lang === 'ko' ? 'https://figma.com/proto/...' : 'https://figma.com/proto/...',
-  githubLink: lang === 'ko' ? '깃헙 주소 (URL)' : 'GitHub URL',
-  githubLinkPh: 'https://github.com/...',
-  date: lang === 'ko' ? '날짜 (비어있으면 오늘 날짜로 자동 입력)' : 'Date (auto-fills today if empty)',
-  collaborators: lang === 'ko' ? '공동작업자 (비어있으면 개인 작업)' : 'Collaborators (leave empty for solo)',
-  collaboratorsPh: lang === 'ko' ? '예: 홍길동, 김철수' : 'e.g., John Doe, Jane Smith',
-  keywords: lang === 'ko' ? '키워드 (Enter로 추가)' : 'Keywords (Press Enter to add)',
-  keywordsPh: lang === 'ko' ? '키워드 입력 후 Enter' : 'Type keyword and press Enter',
-  subject: lang === 'ko' ? '과목 / 수업명' : 'Subject / Course',
-  subjectPh: lang === 'ko' ? '예: UX 디자인 스튜디오' : 'e.g., UX Design Studio',
-  workNotes: lang === 'ko' ? '작업 메모' : 'Work Notes',
-  workNotesPh: lang === 'ko' ? '간단한 메모나 작업 노트' : 'Short memo or work description',
-  description: lang === 'ko' ? '설명' : 'Description',
-  descriptionPh: lang === 'ko' ? '프로젝트에 대한 간단한 설명' : 'Brief project description',
+  imageHint: lang === 'ko' ? '비워두면 제목을 바탕으로 자동 생성됩니다' : 'Left empty, a thumbnail is generated from the title',
+  prototypeLink: lang === 'ko' ? '프로토타입 링크' : 'Prototype Link',
+  githubLink: lang === 'ko' ? 'GitHub 링크' : 'GitHub Link',
+  linkHint: lang === 'ko' ? '입력하면 카드와 상세 페이지에 칩으로 표시됩니다' : 'Shown as a chip on the card and detail page',
+  date: lang === 'ko' ? '날짜 (비어있으면 오늘 날짜)' : 'Date (auto-fills today if empty)',
+  tools: lang === 'ko' ? '사용 툴' : 'Tools Used',
+  toolsPh: lang === 'ko' ? '예: Figma, Notion' : 'e.g., Figma, Notion',
+  teamType: lang === 'ko' ? '작업 형태' : 'Work Type',
+  solo: lang === 'ko' ? '개인 작업' : 'Solo',
+  team: lang === 'ko' ? '팀 작업' : 'Team',
+  description: lang === 'ko' ? '프로젝트 설명' : 'Project Description',
+  descriptionHint: lang === 'ko' ? '상세 페이지의 제목 아래에 표시됩니다' : 'Shown under the title on the detail page',
   cancel: lang === 'ko' ? '취소' : 'Cancel',
   save: lang === 'ko' ? '수정 완료' : 'Save Changes',
   add: lang === 'ko' ? '프로젝트 등록' : 'Add Project',
 });
 
 const emptyForm = {
-  id: '',
   title: '',
   titleEn: '',
   category: '',
   imageUrl: '',
-  description: '',
   prototypeLink: '',
   githubLink: '',
   date: '',
-  collaborators: '',
-  keywords: [] as string[],
-  subject: '',
-  workNotes: '',
+  tools: '',
+  teamType: 'solo' as 'solo' | 'team',
+  description: '',
 };
 
 export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'add', lang = 'ko' }: AddProjectModalProps) => {
   const L = t(lang);
   const [formData, setFormData] = useState(emptyForm);
-  const [keywordInput, setKeywordInput] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
 
   const translateTitle = async () => {
@@ -107,54 +84,34 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
   React.useEffect(() => {
     if (initialData) {
       setFormData({
-        id: initialData.id || '',
         title: initialData.title || '',
         titleEn: initialData.titleEn || '',
         category: initialData.category || '',
         imageUrl: initialData.imageUrl || '',
-        description: initialData.description || '',
         prototypeLink: initialData.prototypeLink || '',
         githubLink: initialData.githubLink || '',
         date: initialData.date || '',
-        collaborators: initialData.collaborators || '',
-        keywords: Array.isArray(initialData.keywords) ? initialData.keywords : [],
-        subject: initialData.subject || '',
-        workNotes: initialData.workNotes || '',
+        tools: initialData.tools || '',
+        teamType: initialData.teamType || 'solo',
+        description: initialData.description || '',
       });
     } else {
       setFormData(emptyForm);
     }
-    setKeywordInput('');
   }, [initialData, isOpen]);
-
-  const addKeyword = () => {
-    const k = keywordInput.trim();
-    if (!k) return;
-    if (formData.keywords.includes(k)) {
-      setKeywordInput('');
-      return;
-    }
-    setFormData({ ...formData, keywords: [...formData.keywords, k] });
-    setKeywordInput('');
-  };
-
-  const removeKeyword = (k: string) => {
-    setFormData({ ...formData, keywords: formData.keywords.filter(x => x !== k) });
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.imageUrl) return;
+    if (!formData.title.trim()) return;
     const today = new Date().toISOString().slice(0, 10);
-    const payload: ProjectData = {
-      ...formData,
-      date: formData.date || today,
-    };
-    onAdd(payload);
+    // Firebase는 undefined를 저장하지 못하므로 빈 값은 빈 문자열로 넘긴다
+    onAdd({ ...formData, date: formData.date || today });
     onClose();
   };
 
-  const inputCls = "w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-stone-500 transition-all text-gray-900";
+  const inputCls = "w-full px-5 py-3.5 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#810000] transition-all text-gray-900";
+  const labelCls = "text-sm font-bold text-gray-900 ml-1 flex items-center gap-2";
+  const hintCls = "text-xs text-gray-400 ml-1";
 
   return (
     <AnimatePresence>
@@ -168,27 +125,24 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative w-full max-w-lg bg-white rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
           >
-            <div className="p-8 md:p-10 pb-4 border-b border-gray-50 bg-white z-10 flex justify-between items-center">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900" style={{ fontFamily: 'var(--font-pretendard)' }}>
+            <div className="p-8 pb-5 border-b border-gray-100 bg-white z-10 flex justify-between items-center">
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900">
                 {mode === 'edit' ? L.editTitle : L.addTitle}
               </h2>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="size-6 text-gray-500" />
+              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <X className="size-5 text-gray-500" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-8 md:p-10 pt-4 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-8 pt-6 custom-scrollbar">
               <form id="project-form" onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1">{L.title}</label>
+                  <label className={labelCls}>{L.title}</label>
                   <input
                     required
                     type="text"
@@ -196,14 +150,11 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder={L.titlePh}
                     className={inputCls}
-                    style={{ fontFamily: 'var(--font-pretendard)' }}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1 flex items-center gap-2">
-                    <Languages className="size-4" />{L.titleEn}
-                  </label>
+                  <label className={labelCls}><Languages className="size-4" />{L.titleEn}</label>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -211,215 +162,143 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
                       onChange={(e) => setFormData({ ...formData, titleEn: e.target.value })}
                       placeholder={L.titleEnPh}
                       className={`${inputCls} flex-1`}
-                      style={{ fontFamily: 'var(--font-pretendard)' }}
                     />
                     <button
                       type="button"
                       onClick={translateTitle}
                       disabled={isTranslating || !formData.title.trim()}
-                      className="px-4 py-3 bg-stone-100 text-stone-700 font-bold rounded-2xl hover:bg-stone-200 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed text-sm whitespace-nowrap flex items-center gap-1.5"
-                      style={{ fontFamily: 'var(--font-pretendard)' }}
+                      className="px-4 bg-gray-100 text-gray-700 font-bold rounded-2xl hover:bg-gray-200 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed text-sm whitespace-nowrap"
                     >
-                      {isTranslating ? (
-                        <span className="animate-pulse">{L.translating}</span>
-                      ) : (
-                        <><Languages className="size-4" />{L.translateBtn}</>
-                      )}
+                      {isTranslating ? L.translating : L.translateBtn}
                     </button>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1">{L.category}</label>
+                  <label className={labelCls}>{L.category}</label>
                   <input
                     type="text"
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     placeholder={L.categoryPh}
                     className={inputCls}
-                    style={{ fontFamily: 'var(--font-pretendard)' }}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1">{L.image}</label>
+                  <label className={labelCls}>{L.image}</label>
                   <div className="relative">
                     <input
-                      required
                       type="url"
                       value={formData.imageUrl}
                       onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                      placeholder={L.imagePh}
+                      placeholder="https://..."
                       className={`${inputCls} pr-12`}
-                      style={{ fontFamily: 'var(--font-pretendard)' }}
                     />
                     <Upload className="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
                   </div>
+                  <p className={hintCls}>{L.imageHint}</p>
                   {formData.imageUrl && (
-                    <div className="mt-3 relative aspect-video w-full rounded-2xl overflow-hidden bg-gray-100 ring-1 ring-black/5">
-                      <img
-                        src={formData.imageUrl}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x450?text=Invalid+Image+URL';
-                        }}
-                      />
+                    <div className="mt-3 aspect-video w-full rounded-2xl overflow-hidden bg-gray-100">
+                      <img src={formData.imageUrl} alt="" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1 flex items-center gap-2"><PlayCircle className="size-4" />{L.prototypeLink}</label>
-                  <div className="relative">
-                    <input
-                      type="url"
-                      value={formData.prototypeLink}
-                      onChange={(e) => setFormData({ ...formData, prototypeLink: e.target.value })}
-                      placeholder={L.prototypeLinkPh}
-                      className={`${inputCls} pr-12`}
-                      style={{ fontFamily: 'var(--font-pretendard)' }}
-                    />
-                    <PlayCircle className="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
-                  </div>
+                  <label className={labelCls}><PlayCircle className="size-4" />{L.prototypeLink}</label>
+                  <input
+                    type="url"
+                    value={formData.prototypeLink}
+                    onChange={(e) => setFormData({ ...formData, prototypeLink: e.target.value })}
+                    placeholder="https://figma.com/proto/..."
+                    className={inputCls}
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1 flex items-center gap-2"><Github className="size-4" />{L.githubLink}</label>
-                  <div className="relative">
-                    <input
-                      type="url"
-                      value={formData.githubLink}
-                      onChange={(e) => setFormData({ ...formData, githubLink: e.target.value })}
-                      placeholder={L.githubLinkPh}
-                      className={`${inputCls} pr-12`}
-                      style={{ fontFamily: 'var(--font-pretendard)' }}
-                    />
-                    <Github className="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
-                  </div>
+                  <label className={labelCls}><Github className="size-4" />{L.githubLink}</label>
+                  <input
+                    type="url"
+                    value={formData.githubLink}
+                    onChange={(e) => setFormData({ ...formData, githubLink: e.target.value })}
+                    placeholder="https://github.com/..."
+                    className={inputCls}
+                  />
+                  <p className={hintCls}>{L.linkHint}</p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1 flex items-center gap-2"><Calendar className="size-4" />{L.date}</label>
+                  <label className={labelCls}><Calendar className="size-4" />{L.date}</label>
                   <input
                     type="date"
                     value={formData.date}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     className={inputCls}
-                    style={{ fontFamily: 'var(--font-pretendard)' }}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1 flex items-center gap-2"><Users className="size-4" />{L.collaborators}</label>
+                  <label className={labelCls}><Wrench className="size-4" />{L.tools}</label>
                   <input
                     type="text"
-                    value={formData.collaborators}
-                    onChange={(e) => setFormData({ ...formData, collaborators: e.target.value })}
-                    placeholder={L.collaboratorsPh}
+                    value={formData.tools}
+                    onChange={(e) => setFormData({ ...formData, tools: e.target.value })}
+                    placeholder={L.toolsPh}
                     className={inputCls}
-                    style={{ fontFamily: 'var(--font-pretendard)' }}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1 flex items-center gap-2"><Tag className="size-4" />{L.keywords}</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={keywordInput}
-                      onChange={(e) => setKeywordInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addKeyword();
-                        }
-                      }}
-                      placeholder={L.keywordsPh}
-                      className={`${inputCls} flex-1`}
-                      style={{ fontFamily: 'var(--font-pretendard)' }}
-                    />
-                    <button
-                      type="button"
-                      onClick={addKeyword}
-                      className="px-5 bg-stone-900 text-white font-bold rounded-2xl hover:bg-black transition-all active:scale-95"
-                    >
-                      <Plus className="size-5" />
-                    </button>
+                  <label className={labelCls}>{L.teamType}</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([
+                      { value: 'solo' as const, label: L.solo, Icon: User },
+                      { value: 'team' as const, label: L.team, Icon: Users },
+                    ]).map(({ value, label, Icon }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, teamType: value })}
+                        className={`flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm transition-all ${
+                          formData.teamType === value
+                            ? 'bg-[#810000] text-white'
+                            : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                        }`}
+                      >
+                        <Icon className="size-4" />
+                        {label}
+                      </button>
+                    ))}
                   </div>
-                  {formData.keywords.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.keywords.map((k) => (
-                        <span
-                          key={k}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 text-stone-700 rounded-full text-sm font-medium"
-                        >
-                          {k}
-                          <button
-                            type="button"
-                            onClick={() => removeKeyword(k)}
-                            className="hover:text-stone-900"
-                          >
-                            <X className="size-3.5" />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1 flex items-center gap-2"><BookOpen className="size-4" />{L.subject}</label>
-                  <input
-                    type="text"
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    placeholder={L.subjectPh}
-                    className={inputCls}
-                    style={{ fontFamily: 'var(--font-pretendard)' }}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1 flex items-center gap-2"><FileText className="size-4" />{L.workNotes}</label>
-                  <textarea
-                    value={formData.workNotes}
-                    onChange={(e) => setFormData({ ...formData, workNotes: e.target.value })}
-                    placeholder={L.workNotesPh}
-                    className={`${inputCls} h-24 resize-none`}
-                    style={{ fontFamily: 'var(--font-pretendard)' }}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-900 ml-1">{L.description}</label>
+                  <label className={labelCls}><FileText className="size-4" />{L.description}</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder={L.descriptionPh}
                     className={`${inputCls} h-32 resize-none`}
-                    style={{ fontFamily: 'var(--font-pretendard)' }}
                   />
+                  <p className={hintCls}>{L.descriptionHint}</p>
                 </div>
               </form>
             </div>
 
-            <div className="p-8 bg-gray-50/50 flex gap-3 border-t border-gray-100">
+            <div className="p-6 bg-gray-50/50 flex gap-3 border-t border-gray-100">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-6 py-4 bg-white border border-gray-200 text-gray-600 font-bold rounded-2xl hover:bg-gray-100 transition-all active:scale-95"
-                style={{ fontFamily: 'var(--font-pretendard)' }}
+                className="flex-1 px-6 py-3.5 bg-white border border-gray-200 text-gray-600 font-bold rounded-2xl hover:bg-gray-100 transition-all active:scale-95"
               >
                 {L.cancel}
               </button>
               <button
                 form="project-form"
                 type="submit"
-                className="flex-[2] px-6 py-4 bg-stone-900 text-white font-bold rounded-2xl hover:bg-black shadow-lg shadow-stone-200 transition-all active:scale-95 flex items-center justify-center gap-2"
-                style={{ fontFamily: 'var(--font-pretendard)' }}
+                className="flex-[2] px-6 py-3.5 bg-[#810000] text-white font-bold rounded-2xl hover:bg-[#1A1512] transition-all active:scale-95 flex items-center justify-center gap-2"
               >
-                {mode === 'edit' ? <Edit2 className="size-5" /> : <Plus className="size-5" />}
+                {mode === 'edit' ? <Edit2 className="size-4" /> : <Plus className="size-4" />}
                 {mode === 'edit' ? L.save : L.add}
               </button>
             </div>
