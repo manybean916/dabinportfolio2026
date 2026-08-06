@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Link, useParams } from 'react-router';
-import { ArrowLeft, ArrowRight, PlayCircle, Github } from 'lucide-react';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ProjectThumb, ProjectChips } from '../components/ProjectVisuals';
 import { Footer } from '../components/Footer';
 import { useProjects } from '../context/ProjectsContext';
 
@@ -52,14 +52,18 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
   const labelCls = lang === 'ko'
     ? 'text-xs font-bold'
     : 'text-[11px] font-bold tracking-[0.25em] uppercase';
+  // teamType이 없는 이전 데이터는 공동작업자 유무로 추정한다
+  const isTeam = project.teamType
+    ? project.teamType === 'team'
+    : Boolean(project.collaborators?.trim());
+
   const meta = [
-    { label: lang === 'ko' ? '카테고리' : 'Category', value: project.category },
     { label: lang === 'ko' ? '날짜' : 'Date', value: project.date },
+    { label: lang === 'ko' ? '사용 툴' : 'Tools', value: project.tools },
     {
-      label: lang === 'ko' ? '참여' : 'Team',
-      value: project.collaborators?.trim() || (lang === 'ko' ? '개인 작업' : 'Solo'),
+      label: lang === 'ko' ? '작업 형태' : 'Work Type',
+      value: isTeam ? (lang === 'ko' ? '팀 작업' : 'Team') : (lang === 'ko' ? '개인 작업' : 'Solo'),
     },
-    { label: lang === 'ko' ? '과목 / 수업' : 'Subject', value: project.subject },
   ].filter((m) => m.value);
 
   return (
@@ -97,31 +101,27 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
             <p className={`${labelCls} text-[#80605C]`}>
               {project.category}
             </p>
-            <h1 className="mt-6 text-[clamp(2.25rem,6vw,4.25rem)] font-bold leading-[1.1] break-keep">
+            <h1 className="mt-4 text-[clamp(1.75rem,3.6vw,2.75rem)] font-bold leading-[1.25] break-keep">
               {title}
             </h1>
 
-            {project.keywords && project.keywords.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-8">
-                {project.keywords.map((k) => (
-                  <span
-                    key={k}
-                    className="px-4 py-1.5 border border-[#1A1512]/20 rounded-full text-xs font-medium text-[#1A1512]/70"
-                  >
-                    {k}
-                  </span>
-                ))}
-              </div>
+            {/* 프로젝트 설명은 제목 바로 아래에 놓인다 */}
+            {project.description && (
+              <p className="mt-6 max-w-3xl text-base md:text-lg leading-[1.8] text-[#1A1512]/70 whitespace-pre-line break-keep">
+                {project.description}
+              </p>
             )}
+
+            <ProjectChips project={project} lang={lang} className="mt-7" />
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 44 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-14 aspect-[16/10] overflow-hidden bg-[#1A1512]/5"
+            className="mt-12 aspect-[16/10] overflow-hidden bg-[#1A1512]/5"
           >
-            <ImageWithFallback src={project.imageUrl} alt={title} className="w-full h-full object-cover" />
+            <ProjectThumb project={project} className="w-full h-full object-cover" />
           </motion.div>
 
           {meta.length > 0 && (
@@ -134,59 +134,6 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
                   <p className="text-base font-medium break-keep">{m.value}</p>
                 </div>
               ))}
-            </div>
-          )}
-
-          {(project.description || project.workNotes) && (
-            <div className="mt-16 space-y-12">
-              {project.description && (
-                <section>
-                  <h2 className={`${labelCls} text-[#80605C]`}>
-                    {lang === 'ko' ? '프로젝트 개요' : 'Overview'}
-                  </h2>
-                  <p className="mt-5 text-lg md:text-xl leading-[1.75] text-[#1A1512]/80 whitespace-pre-line break-keep">
-                    {project.description}
-                  </p>
-                </section>
-              )}
-
-              {project.workNotes && (
-                <section>
-                  <h2 className={`${labelCls} text-[#80605C]`}>
-                    {lang === 'ko' ? '작업 노트' : 'Work Notes'}
-                  </h2>
-                  <p className="mt-5 text-lg md:text-xl leading-[1.75] text-[#1A1512]/80 whitespace-pre-line break-keep">
-                    {project.workNotes}
-                  </p>
-                </section>
-              )}
-            </div>
-          )}
-
-          {(project.prototypeLink || project.githubLink) && (
-            <div className="flex flex-wrap gap-3 mt-16 pt-10 border-t border-[#1A1512]/15">
-              {project.prototypeLink && (
-                <a
-                  href={project.prototypeLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#810000] text-[#E7E6E4] rounded-full text-sm font-bold hover:bg-[#1A1512] transition-colors"
-                >
-                  <PlayCircle className="size-4" />
-                  {lang === 'ko' ? '프로토타입 보기' : 'View Prototype'}
-                </a>
-              )}
-              {project.githubLink && (
-                <a
-                  href={project.githubLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 border border-[#1A1512]/25 rounded-full text-sm font-bold hover:bg-[#1A1512] hover:text-[#E7E6E4] transition-colors"
-                >
-                  <Github className="size-4" />
-                  GitHub
-                </a>
-              )}
             </div>
           )}
 

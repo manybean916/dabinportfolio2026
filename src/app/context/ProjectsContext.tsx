@@ -1,25 +1,29 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ref, get, push, set, remove, child } from 'firebase/database';
 import { db } from '../../lib/firebase';
-import projectImg1 from "../../imports/KakaoTalk_20260415_175036426.jpg";
-import projectImg2 from "../../imports/스크린샷(5).png";
 
 export interface Project {
   id?: string;
   title: string;
   titleEn?: string;
   category: string;
-  imageUrl: string;
+  /** 비워두면 제목을 바탕으로 썸네일을 자동 생성한다 */
+  imageUrl?: string;
   description?: string;
   prototypeLink?: string;
   githubLink?: string;
   date?: string;
+  /** 사용한 툴 (쉼표로 구분) */
+  tools?: string;
+  /** 개인 작업 / 팀 작업 */
+  teamType?: 'solo' | 'team';
+  createdAt?: number;
+  updatedAt?: number;
+  // 이전 데이터 호환용 — 폼에서는 더 이상 편집하지 않는다
   collaborators?: string;
   keywords?: string[];
   subject?: string;
   workNotes?: string;
-  createdAt?: number;
-  updatedAt?: number;
 }
 
 interface ProjectsContextType {
@@ -30,29 +34,6 @@ interface ProjectsContextType {
 }
 
 const ProjectsContext = createContext<ProjectsContextType | undefined>(undefined);
-
-const initialProjects: Project[] = [
-  {
-    id: "project:1",
-    title: "2026 UX 리서치 전략 심층 인터뷰",
-    category: "UX Research",
-    imageUrl: projectImg1,
-  },
-  {
-    id: "project:2",
-    title: "stakeholder분석 및 대시보드 제작",
-    category: "Product Design",
-    imageUrl: projectImg2,
-    prototypeLink: "https://service-2026-foldable-market-super-cycle-dashboar-152446546512.us-west1.run.app",
-  },
-  {
-    id: "project:3",
-    title: "페르소나설정 실습",
-    category: "E-commerce",
-    imageUrl: "https://ik.imagekit.io/cuquvvrdw/bwan/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7(2).png",
-    prototypeLink: "https://morph-thing-84845400.figma.site",
-  },
-];
 
 const sortByUpdated = (list: Project[]) =>
   [...list].sort((a, b) => {
@@ -65,7 +46,7 @@ const sortByUpdated = (list: Project[]) =>
   });
 
 export const ProjectsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProjects = async () => {
