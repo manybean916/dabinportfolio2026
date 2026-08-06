@@ -29,6 +29,9 @@ export default defineConfig({
       // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
     },
+    // react/react-dom은 peerDependency라 사전번들링 과정에서 사본이 갈릴 수 있다.
+    // 항상 같은 인스턴스를 쓰도록 고정한다 (react-router의 Invalid hook call 방지)
+    dedupe: ['react', 'react-dom'],
   },
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
