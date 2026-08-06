@@ -1,5 +1,17 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap");
 
 :root {
   --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+
+  /* 디스플레이용 세리프. Playfair엔 한글 글리프가 없어 한글은 고운바탕으로 자동 폴백된다 */
+  --font-display: "Playfair Display", "Gowun Batang", "Nanum Myeongjo", serif;
+
+  /* 팔레트 */
+  --c-bg: #E7E6E4;        /* 배경 */
+  --c-primary: #810000;   /* 포인트 — 이름·주요 버튼 */
+  --c-secondary: #80605C; /* 세컨 컬러 — 푸터 블록·라벨·호버 */
+  --c-block: #D5CECA;     /* 히어로 컬러 블록 */
+  --c-ink: #1A1512;       /* 본문 */
 }

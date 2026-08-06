@@ -1,79 +1,90 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Instagram, Twitter, Github, Mail, ArrowUpRight } from 'lucide-react';
+import { Instagram, Mail, Github, ArrowUpRight } from 'lucide-react';
 
 export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer id="contact" className="py-24 px-6 border-t border-gray-100 bg-white">
-      <div className="max-w-7xl mx-auto flex flex-col items-center gap-16 text-center">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+    <footer id="contact" className="bg-[#80605C] text-[#E7E6E4]">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 py-28 md:py-36">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="space-y-4"
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center"
         >
-          
-          <h2 
-            className="tracking-tight text-gray-900 leading-tight mb-8 font-bold text-[40px]"
-            style={{ fontFamily: 'var(--font-pretendard)' }}
+          <p className="text-[11px] font-bold tracking-[0.35em] uppercase text-[#E7E6E4]/60">
+            Get in touch
+          </p>
+
+          {/* 세리프는 공통. 한글엔 이탤릭체가 없어 영문일 때만 기울인다 */}
+          <h2
+            className={`mt-8 leading-[1.25] text-[clamp(2rem,5.5vw,4rem)] break-keep ${
+              lang === 'ko' ? '' : 'italic leading-[1.05]'
+            }`}
+            style={{ fontFamily: 'var(--font-display)' }}
           >
             {lang === 'ko' ? (
-              <>함께 멋진 프로젝트를<br/>시작해볼까요?</>
+              <>함께 멋진 프로젝트를<br />시작해볼까요?</>
             ) : (
-              <>Shall we start a great<br/>project together?</>
+              <>Shall we start something<br />great together?</>
             )}
           </h2>
-          <a 
+
+          <a
             href="https://mail.google.com/mail/?view=cm&fs=1&to=yoondabin916@gmail.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-4 font-bold tracking-tight group hover:text-pink-500 transition-colors text-[32px] text-[#0740bc]"
-            style={{ fontFamily: 'var(--font-pretendard)' }}
+            className="group inline-flex items-center gap-3 mt-12 px-8 py-4 bg-[#E7E6E4] text-[#810000] rounded-full text-sm md:text-base font-bold hover:bg-[#1A1512] hover:text-[#E7E6E4] transition-colors"
           >
-            yoondabin916@gmail.com <ArrowUpRight className="size-8 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            yoondabin916@gmail.com
+            <ArrowUpRight className="size-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
         </motion.div>
 
+        <div className="mt-28 pt-10 border-t border-[#E7E6E4]/25 flex flex-col md:flex-row items-center justify-between gap-8">
+          <span
+            className="text-2xl md:text-3xl italic tracking-[0.06em]"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            YOONDABIN
+          </span>
 
-        <div className="flex flex-col md:flex-row items-center justify-between w-full border-t border-gray-100 pt-16 mt-8 gap-8">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-xl font-bold tracking-tighter"
-            style={{ fontFamily: 'var(--font-pretendard)' }}
-          >CreativeHub</motion.div>
-
-          <div className="flex items-center gap-12">
-            <button 
-              onClick={() => window.open("https://www.instagram.com/toomanybean?igsh=MTc5bGlueWRwbzh0eQ%3D%3D&utm_source=qr", "_blank", "noopener,noreferrer")}
-              className="p-3 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors group cursor-pointer border-none outline-none"
+          <div className="flex items-center gap-3">
+            <a
+              href="https://www.instagram.com/toomanybean?igsh=MTc5bGlueWRwbzh0eQ%3D%3D&utm_source=qr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 rounded-full border border-[#E7E6E4]/35 hover:bg-[#E7E6E4] hover:text-[#810000] transition-colors"
               aria-label="Instagram"
             >
-              <Instagram className="size-6 text-gray-400 group-hover:text-black transition-colors" />
-            </button>
-            <a 
+              <Instagram className="size-5" />
+            </a>
+            <a
               href="https://mail.google.com/mail/?view=cm&fs=1&to=yoondabin916@gmail.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors group cursor-pointer border-none outline-none" 
+              className="p-3 rounded-full border border-[#E7E6E4]/35 hover:bg-[#E7E6E4] hover:text-[#810000] transition-colors"
               aria-label="Email"
             >
-              <Mail className="size-6 text-gray-400 group-hover:text-black transition-colors" />
+              <Mail className="size-5" />
+            </a>
+            <a
+              href="https://github.com/manybean916"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 rounded-full border border-[#E7E6E4]/35 hover:bg-[#E7E6E4] hover:text-[#810000] transition-colors"
+              aria-label="GitHub"
+            >
+              <Github className="size-5" />
             </a>
           </div>
 
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-sm text-gray-400 font-medium tracking-tight"
-            style={{ fontFamily: 'var(--font-pretendard)' }}
-          >
-            © {currentYear} Dabin Yoon. All rights reserved.
-          </motion.div>
+          <p className="text-xs text-[#E7E6E4]/60 tracking-wide">
+            © {currentYear} Yoondabin. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

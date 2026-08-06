@@ -1,55 +1,145 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { Instagram, Mail, Github } from 'lucide-react';
 
 interface HeroProps {
-  name: string;
-  imageUrl: string;
   lang: 'ko' | 'en';
 }
 
-export const Hero = ({ name, imageUrl, lang }: HeroProps) => {
-  return (
-    <section id="home" className="pt-32 pb-20 px-6 max-w-7xl mx-auto overflow-hidden">
-      <div className="flex flex-col items-center text-center gap-16">
-        <motion.h1 
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex flex-col items-center gap-8"
-          style={{ fontFamily: 'var(--font-pretendard)' }}
-        >
-          <span className="flex flex-col items-center gap-4">
-            <span className="text-[8vw] tracking-tight text-gray-900 leading-[0.9] block text-[36px] font-bold">
-              {lang === 'ko' ? '윤다빈' : 'YOON DA BIN'}
-            </span>
-            <span className="font-medium text-stone-400 tracking-tight uppercase text-[20px] font-[Akatab]">
-              Product Designer
-            </span>
-          </span>
-          <span className="text-lg md:text-2xl font-medium text-stone-500 tracking-tight leading-relaxed max-w-[20rem] md:max-w-2xl block">
-            {lang === 'ko' ? (
-              <>사용자의 이탈을 막고 전환을 이끄는<br className="hidden md:block" /> '결정적인 한 끗'의 디테일에 집중합니다.</>
-            ) : (
-              <>Focusing on the 'decisive detail' that<br className="hidden md:block" /> prevents user churn and drives conversion.</>
-            )}
-          </span>
-        </motion.h1>
+// 부모가 자식들의 등장을 순차적으로 지휘한다
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.13, delayChildren: 0.1 } },
+};
 
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: 40 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-          className="w-full max-w-4xl relative aspect-[16/9] md:aspect-[21/10] max-h-[380px] overflow-hidden rounded-[40px] bg-stone-100 ring-1 ring-black/5"
-        >
-          <ImageWithFallback
-            src="https://images.unsplash.com/photo-1612123912968-5f6e964e8ea5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtaW5pbWFsaXN0JTIwdXglMjB1aSUyMGRlc2lnbmVyJTIwd29ya3NwYWNlJTIwYXBwbGUlMjBzdHVkaW8lMjBkaXNwbGF5JTIwYmVpZ2UlMjBhZXN0aGV0aWN8ZW58MXx8fHwxNzc2NjYzODg3fDA&ixlib=rb-4.1.0&q=80&w=1080"
-            alt="UX UI Designer Workspace"
-            className="w-full h-full object-cover"
+// 마스크 뒤에서 밀려 올라오는 등장 — 바깥 래퍼가 잘라내고 안쪽이 위로 이동한다
+const maskRise = {
+  hidden: { y: '110%' },
+  show: { y: '0%', transition: { duration: 1.2, ease: [0.645, 0.045, 0.355, 1] as const } },
+};
+
+const riseUp = {
+  hidden: { opacity: 0, y: 44 },
+  show: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.22, 1, 0.36, 1] as const } },
+};
+
+/** 한 줄을 마스크로 감싸 슬라이드업시킨다. stagger 순서에 참여하도록 래퍼도 motion으로 둔다. */
+const MaskLine = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+  <motion.div variants={{ hidden: {}, show: {} }} className={`overflow-hidden ${className}`}>
+    <motion.div variants={maskRise}>{children}</motion.div>
+  </motion.div>
+);
+
+export const Hero = ({ lang }: HeroProps) => {
+  return (
+    <section id="home" className="pt-36 pb-24 px-6 md:px-10 max-w-[1400px] mx-auto overflow-hidden">
+      <motion.div variants={container} initial="hidden" animate="show">
+        <MaskLine className="py-[0.2em]">
+          <p className="text-center text-[11px] md:text-xs font-bold tracking-[0.35em] uppercase text-[#80605C]">
+            Product Designer
+          </p>
+        </MaskLine>
+
+        {/* 이름이 컬러 블록 위로 겹치는 에디토리얼 구성 */}
+        <div className="relative flex flex-col items-center mt-6">
+          {/* leading이 0.85라 글자가 박스를 넘친다. 래퍼 em은 부모(16px) 기준이라
+              글자 크기(12vw)에 비례하는 vw로 여백을 줘야 획이 잘리지 않는다 */}
+          <MaskLine className="relative z-20 w-full py-[1.6vw]">
+            <h1
+              className="text-center italic text-[#810000] leading-[0.85] tracking-[0.01em] text-[clamp(2.6rem,12vw,10.5rem)]"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              YOONDABIN
+            </h1>
+          </MaskLine>
+
+          {/* 이미지 대신 컬러 블록 */}
+          <motion.div
+            variants={riseUp}
+            className="relative z-10 -mt-[0.3em] w-[44vw] max-w-[300px] aspect-[3/4] bg-[#D5CECA]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-900/10 to-transparent" />
+        </div>
+
+        <MaskLine className="mt-14 py-[0.1em]">
+          {/* ZEN Serif는 400 한 가지 굵기뿐이라 굵게 지정하지 않는다 (가짜 볼드 방지) */}
+          <p
+            className={`text-center mx-auto max-w-3xl text-[22px] md:text-[34px] leading-[1.5] text-[#1A1512]/70 break-keep ${
+              lang === 'ko' ? '' : 'italic'
+            }`}
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            {lang === 'ko'
+              ? '논리적인 설계와 감각적인 레이아웃의 균형을 추구합니다.'
+              : 'Balancing logical structure with a refined sense of layout.'}
+          </p>
+        </MaskLine>
+
+        <motion.div variants={riseUp} className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="#work"
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-[#810000] text-[#E7E6E4] rounded-full text-sm font-bold hover:bg-[#1A1512] transition-colors"
+          >
+            View Work
+            <span className="size-1.5 rounded-full bg-[#E7E6E4]" />
+          </a>
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=yoondabin916@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 border border-[#1A1512]/25 text-[#1A1512] rounded-full text-sm font-bold hover:bg-[#1A1512] hover:text-[#E7E6E4] hover:border-[#1A1512] transition-colors"
+          >
+            Contact Me
+          </a>
         </motion.div>
-      </div>
+
+        {/* 소개 문단 + 소셜 */}
+        <motion.div
+          variants={riseUp}
+          className="mt-24 flex flex-col md:flex-row md:items-end justify-between gap-10 border-t border-[#1A1512]/15 pt-10"
+        >
+          <p className="max-w-lg text-[15px] leading-[1.8] text-[#1A1512]/70 break-keep">
+            {lang === 'ko'
+              ? '브랜드의 정체성을 유연한 인터랙션과 감각적인 UX로 시각화하고, 기획과 디자인의 경계를 허물어, 명확한 비전으로 팀과 제품의 성장을 함께 이끕니다.'
+              : 'I visualize brand identity through flexible interactions and considered UX — dissolving the line between planning and design, and driving the growth of teams and products with a clear vision.'}
+          </p>
+
+          <div className="flex flex-col gap-3 md:items-end shrink-0">
+            {/* 장식용 라벨은 자간이 넓어야 어울려서 언어와 무관하게 영문으로 둔다 */}
+            <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-[#1A1512]/45">
+              Follow me
+            </span>
+            <div className="flex items-center gap-2.5">
+              <a
+                href="https://www.instagram.com/toomanybean?igsh=MTc5bGlueWRwbzh0eQ%3D%3D&utm_source=qr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 rounded-full border border-[#1A1512]/20 text-[#1A1512]/60 hover:bg-[#80605C] hover:text-[#E7E6E4] hover:border-[#80605C] transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="size-4" />
+              </a>
+              <a
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=yoondabin916@gmail.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 rounded-full border border-[#1A1512]/20 text-[#1A1512]/60 hover:bg-[#80605C] hover:text-[#E7E6E4] hover:border-[#80605C] transition-colors"
+                aria-label="Email"
+              >
+                <Mail className="size-4" />
+              </a>
+              <a
+                href="https://github.com/manybean916"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 rounded-full border border-[#1A1512]/20 text-[#1A1512]/60 hover:bg-[#80605C] hover:text-[#E7E6E4] hover:border-[#80605C] transition-colors"
+                aria-label="GitHub"
+              >
+                <Github className="size-4" />
+              </a>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 };
