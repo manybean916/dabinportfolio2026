@@ -99,7 +99,7 @@ export const Home = ({ lang, onToggleLang }: HomeProps) => {
 
   return (
     <div
-      className="min-h-screen bg-[#E7E6E4] text-[#1A1512] selection:bg-[#80605C] selection:text-[#E7E6E4]"
+      className="min-h-screen bg-[#FAF9F7] text-[#1A1512] selection:bg-[#80605C] selection:text-[#FAF9F7]"
       style={{ fontFamily: 'var(--font-pretendard)' }}
     >
       <Navbar lang={lang} onToggleLang={onToggleLang} onLoginClick={() => setIsLoginModalOpen(true)} />

@@ -10,7 +10,7 @@ const hashString = (s: string) => {
   return h;
 };
 
-const TONES = ['#D5CECA', '#CFC7C1', '#C6BCB6', '#DBD6D1', '#BFB4AE'];
+const TONES = ['#EAE3DF', '#E6DED9', '#E1D8D2', '#EFEAE6', '#DCD3CD'];
 
 /** 썸네일이 없거나 불러오지 못했을 때 제목으로 만들어내는 대체 화면 */
 const GeneratedThumb = ({ project }: { project: Project }) => {
@@ -77,7 +77,7 @@ export const ProjectChips = ({
           href={project.prototypeLink}
           target="_blank"
           rel="noopener noreferrer"
-          className={`${chip} border-[#810000]/30 text-[#810000] hover:bg-[#810000] hover:text-[#E7E6E4] hover:border-[#810000]`}
+          className={`${chip} border-[#810000]/30 text-[#810000] hover:bg-[#810000] hover:text-[#FAF9F7] hover:border-[#810000]`}
         >
           <PlayCircle className="size-3.5" />
           {lang === 'ko' ? '프로토타입' : 'Prototype'}
@@ -88,7 +88,7 @@ export const ProjectChips = ({
           href={project.githubLink}
           target="_blank"
           rel="noopener noreferrer"
-          className={`${chip} border-[#1A1512]/25 text-[#1A1512]/70 hover:bg-[#1A1512] hover:text-[#E7E6E4] hover:border-[#1A1512]`}
+          className={`${chip} border-[#1A1512]/25 text-[#1A1512]/70 hover:bg-[#1A1512] hover:text-[#FAF9F7] hover:border-[#1A1512]`}
         >
           <Github className="size-3.5" />
           GitHub

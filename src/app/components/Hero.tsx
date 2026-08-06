@@ -56,7 +56,7 @@ export const Hero = ({ lang }: HeroProps) => {
           {/* 이미지 대신 컬러 블록 */}
           <motion.div
             variants={riseUp}
-            className="relative z-10 -mt-[0.3em] w-[44vw] max-w-[300px] aspect-[3/4] bg-[#D5CECA]"
+            className="relative z-10 -mt-[0.3em] w-[44vw] max-w-[300px] aspect-[3/4] bg-[#EAE3DF]"
           />
         </div>
 
@@ -77,16 +77,16 @@ export const Hero = ({ lang }: HeroProps) => {
         <motion.div variants={riseUp} className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <a
             href="#work"
-            className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-[#810000] text-[#E7E6E4] rounded-full text-sm font-bold hover:bg-[#1A1512] transition-colors"
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-[#810000] text-[#FAF9F7] rounded-full text-sm font-bold hover:bg-[#1A1512] transition-colors"
           >
             View Work
-            <span className="size-1.5 rounded-full bg-[#E7E6E4]" />
+            <span className="size-1.5 rounded-full bg-[#FAF9F7]" />
           </a>
           <a
             href="https://mail.google.com/mail/?view=cm&fs=1&to=yoondabin916@gmail.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 px-8 py-3.5 border border-[#1A1512]/25 text-[#1A1512] rounded-full text-sm font-bold hover:bg-[#1A1512] hover:text-[#E7E6E4] hover:border-[#1A1512] transition-colors"
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 border border-[#1A1512]/25 text-[#1A1512] rounded-full text-sm font-bold hover:bg-[#1A1512] hover:text-[#FAF9F7] hover:border-[#1A1512] transition-colors"
           >
             Contact Me
           </a>
@@ -113,7 +113,7 @@ export const Hero = ({ lang }: HeroProps) => {
                 href="https://www.instagram.com/toomanybean?igsh=MTc5bGlueWRwbzh0eQ%3D%3D&utm_source=qr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 rounded-full border border-[#1A1512]/20 text-[#1A1512]/60 hover:bg-[#80605C] hover:text-[#E7E6E4] hover:border-[#80605C] transition-colors"
+                className="p-2.5 rounded-full border border-[#1A1512]/20 text-[#1A1512]/60 hover:bg-[#80605C] hover:text-[#FAF9F7] hover:border-[#80605C] transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram className="size-4" />
@@ -122,7 +122,7 @@ export const Hero = ({ lang }: HeroProps) => {
                 href="https://mail.google.com/mail/?view=cm&fs=1&to=yoondabin916@gmail.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 rounded-full border border-[#1A1512]/20 text-[#1A1512]/60 hover:bg-[#80605C] hover:text-[#E7E6E4] hover:border-[#80605C] transition-colors"
+                className="p-2.5 rounded-full border border-[#1A1512]/20 text-[#1A1512]/60 hover:bg-[#80605C] hover:text-[#FAF9F7] hover:border-[#80605C] transition-colors"
                 aria-label="Email"
               >
                 <Mail className="size-4" />
@@ -131,7 +131,7 @@ export const Hero = ({ lang }: HeroProps) => {
                 href="https://github.com/manybean916"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 rounded-full border border-[#1A1512]/20 text-[#1A1512]/60 hover:bg-[#80605C] hover:text-[#E7E6E4] hover:border-[#80605C] transition-colors"
+                className="p-2.5 rounded-full border border-[#1A1512]/20 text-[#1A1512]/60 hover:bg-[#80605C] hover:text-[#FAF9F7] hover:border-[#80605C] transition-colors"
                 aria-label="GitHub"
               >
                 <Github className="size-4" />
