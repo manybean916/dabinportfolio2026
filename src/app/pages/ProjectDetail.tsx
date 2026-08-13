@@ -2,7 +2,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Link, useParams } from 'react-router';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { ProjectThumb, ProjectChips } from '../components/ProjectVisuals';
+import { ProjectChips } from '../components/ProjectVisuals';
+import { ProjectGallery } from '../components/ProjectGallery';
 import { Footer } from '../components/Footer';
 import { useProjects } from '../context/ProjectsContext';
 
@@ -112,15 +113,6 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
             <ProjectChips project={project} lang={lang} className="mt-7" />
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 44 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-12 aspect-[16/10] overflow-hidden bg-[#1A1512]/5"
-          >
-            <ProjectThumb project={project} className="w-full h-full object-cover" />
-          </motion.div>
-
           {meta.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-14 pt-10 border-t border-[#1A1512]/15">
               {meta.map((m) => (
@@ -133,6 +125,8 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
               ))}
             </div>
           )}
+
+          <ProjectGallery images={project.gallery || []} lang={lang} />
 
           {nextProject && (
             <Link

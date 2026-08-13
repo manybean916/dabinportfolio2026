@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
+import { getStorage } from "firebase/storage";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -26,6 +27,7 @@ if (typeof window !== 'undefined') {
 
 export const auth = getAuth(app);
 export const db = getDatabase(app);
+export const storage = getStorage(app);
 
 // Safe initialization of Analytics
 let analytics: any = null;
