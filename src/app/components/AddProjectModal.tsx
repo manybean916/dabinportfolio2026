@@ -25,8 +25,10 @@ const t = (lang: 'ko' | 'en') => ({
   translateFail: lang === 'ko' ? '번역 실패, 직접 입력해 주세요.' : 'Translation failed, please enter manually.',
   category: lang === 'ko' ? '카테고리' : 'Category',
   categoryPh: lang === 'ko' ? '예: UX Research, UI Design' : 'e.g., UX Research, UI Design',
-  image: lang === 'ko' ? '썸네일 이미지 URL' : 'Thumbnail Image URL',
-  imageHint: lang === 'ko' ? '비워두면 제목을 바탕으로 자동 생성됩니다' : 'Left empty, a thumbnail is generated from the title',
+  image: lang === 'ko' ? '썸네일 이미지 URL (직접 지정, 선택)' : 'Thumbnail Image URL (manual override)',
+  imageHint: lang === 'ko'
+    ? '작업 과정의 1번째 이미지가 있으면 그게 우선 사용됩니다. 둘 다 없으면 제목을 바탕으로 자동 생성됩니다'
+    : "The first Work Gallery image is used first if present. If neither exists, a thumbnail is generated from the title",
   prototypeLink: lang === 'ko' ? '프로토타입 링크' : 'Prototype Link',
   githubLink: lang === 'ko' ? 'GitHub 링크' : 'GitHub Link',
   linkHint: lang === 'ko' ? '입력하면 카드와 상세 페이지에 칩으로 표시됩니다' : 'Shown as a chip on the card and detail page',
@@ -40,8 +42,8 @@ const t = (lang: 'ko' | 'en') => ({
   descriptionHint: lang === 'ko' ? '상세 페이지의 제목 아래에 표시됩니다' : 'Shown under the title on the detail page',
   gallery: lang === 'ko' ? '작업 과정 (여러 장)' : 'Work Gallery',
   galleryHint: lang === 'ko'
-    ? '상세 페이지에 이 순서 그대로 표시됩니다. 장당 10MB 이하 · 드래그하거나 화살표로 순서 변경'
-    : 'Shown on the detail page in this order. Max 10MB per image · drag or use the arrows to reorder',
+    ? '1번째 이미지가 메인 페이지 썸네일로 자동 사용됩니다. 상세 페이지엔 이 순서 그대로 표시됩니다. 장당 10MB 이하 · 드래그하거나 화살표로 순서 변경'
+    : 'The 1st image is used as the main page thumbnail automatically. Shown on the detail page in this order. Max 10MB per image · drag or use the arrows to reorder',
   galleryAdd: lang === 'ko' ? '이미지 추가' : 'Add Images',
   uploading: lang === 'ko' ? '업로드 중' : 'Uploading',
   cancel: lang === 'ko' ? '취소' : 'Cancel',

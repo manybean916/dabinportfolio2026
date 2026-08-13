@@ -12,14 +12,20 @@ const hashString = (s: string) => {
 
 const TONES = ['#EAE3DF', '#E6DED9', '#E1D8D2', '#EFEAE6', '#DCD3CD'];
 
-/** 썸네일이 없거나 불러오지 못했을 때 제목으로 만들어내는 대체 화면 */
+/** 갤러리 1번째 이미지를 우선하고, 없으면 수동으로 넣은 썸네일 URL을 쓴다 */
+export const resolveThumbUrl = (project: Project) => project.gallery?.[0] || project.imageUrl;
+
+/**
+ * 썸네일이 없거나 불러오지 못했을 때 제목으로 만들어내는 대체 화면.
+ * 실제 이미지와 달리 원본 비율이 없으므로 자체적으로 세로 비율 박스를 갖는다.
+ */
 const GeneratedThumb = ({ project }: { project: Project }) => {
   const tone = TONES[hashString(project.title || '') % TONES.length];
   const initial = (project.title || '?').trim().charAt(0);
 
   return (
     <div
-      className="w-full h-full flex flex-col items-center justify-center gap-2 select-none"
+      className="w-full aspect-[4/5] flex flex-col items-center justify-center gap-2 select-none"
       style={{ backgroundColor: tone }}
       aria-hidden="true"
     >
@@ -38,22 +44,29 @@ const GeneratedThumb = ({ project }: { project: Project }) => {
   );
 };
 
-/** 프로젝트 썸네일 — 이미지가 없거나 깨지면 자동 생성 화면으로 대체된다 */
+/**
+ * 프로젝트 썸네일 — 이미지가 없거나 깨지면 자동 생성 화면으로 대체된다.
+ * className에 고정 비율(aspect-*)을 넣지 않으면 이미지 원본 비율 그대로 렌더링된다
+ * — 가로 이미지는 넓고 낮게, 세로 이미지는 좁고 길게, 잘리지 않고 표시된다.
+ */
 export const ProjectThumb = ({
   project,
   className = '',
 }: {
   project: Project;
   className?: string;
-}) => (
-  <ImageWithFallback
-    src={project.imageUrl}
-    alt={project.title}
-    key={project.imageUrl}
-    className={className}
-    fallback={<GeneratedThumb project={project} />}
-  />
-);
+}) => {
+  const src = resolveThumbUrl(project);
+  return (
+    <ImageWithFallback
+      src={src}
+      alt={project.title}
+      key={src}
+      className={className}
+      fallback={<GeneratedThumb project={project} />}
+    />
+  );
+};
 
 /** 프로토타입·GitHub 링크를 칩으로 보여준다. 링크가 없으면 아무것도 렌더링하지 않는다. */
 export const ProjectChips = ({
