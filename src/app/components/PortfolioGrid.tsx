@@ -88,10 +88,13 @@ const ProjectCard = ({
 
       {/* 칩도 링크라서 카드 링크 안에 중첩되지 않도록 영역을 분리한다 */}
       <Link to={`/project/${encodeURIComponent(project.id || '')}`} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden bg-[#1A1512]/5">
+        {/* 고정 비율을 강제하지 않는다 — 가로 이미지는 넓고 낮게, 세로 이미지는
+            좁고 길게, 원본 비율 그대로 잘리지 않고 보인다 (썸네일이 없으면
+            GeneratedThumb이 자체 aspect-[4/5]를 가진다) */}
+        <div className="relative overflow-hidden bg-[#1A1512]/5">
           <ProjectThumb
             project={project}
-            className="w-full h-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]"
+            className="w-full h-auto block transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]"
           />
           <div className="absolute inset-0 bg-[#1A1512]/0 group-hover:bg-[#1A1512]/25 transition-colors duration-500 pointer-events-none" />
         </div>
@@ -179,7 +182,9 @@ export const PortfolioGrid = ({ projects, onAddClick, onEdit, onDelete, lang }: 
           {lang === 'ko' ? '아직 등록된 프로젝트가 없습니다.' : 'No projects yet.'}
         </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-24">
+        // items-start: 그리드 기본 stretch를 끄지 않으면 짧은(가로형) 카드가
+        // 같은 행의 긴(세로형) 카드 높이만큼 억지로 늘어나 빈 공간이 생긴다
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-24 items-start">
           {projects.map((project, index) => (
             <ProjectCard
               key={project.id || project.title + index}
