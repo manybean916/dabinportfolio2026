@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Upload, Plus, Edit2, Calendar, Wrench, FileText, Languages, PlayCircle, Github, User, Users, Images, Loader2 } from 'lucide-react';
+import { X, Upload, Plus, Edit2, Calendar, Wrench, FileText, Languages, PlayCircle, Github, User, Users, Images, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Project } from '../context/ProjectsContext';
 import { uploadProjectImages, deleteProjectImage, UploadError } from '../../lib/storage';
 
@@ -39,7 +39,9 @@ const t = (lang: 'ko' | 'en') => ({
   description: lang === 'ko' ? '프로젝트 설명' : 'Project Description',
   descriptionHint: lang === 'ko' ? '상세 페이지의 제목 아래에 표시됩니다' : 'Shown under the title on the detail page',
   gallery: lang === 'ko' ? '작업 과정 (여러 장)' : 'Work Gallery',
-  galleryHint: lang === 'ko' ? '상세 페이지에 슬라이드로 표시됩니다. 장당 10MB 이하' : 'Shown as slides on the detail page. Max 10MB per image',
+  galleryHint: lang === 'ko'
+    ? '상세 페이지에 이 순서 그대로 표시됩니다. 장당 10MB 이하 · 화살표로 순서 변경'
+    : 'Shown on the detail page in this order. Max 10MB per image · use the arrows to reorder',
   galleryAdd: lang === 'ko' ? '이미지 추가' : 'Add Images',
   uploading: lang === 'ko' ? '업로드 중' : 'Uploading',
   cancel: lang === 'ko' ? '취소' : 'Cancel',
@@ -139,6 +141,16 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
   const handleGalleryRemove = (url: string) => {
     setFormData(prev => ({ ...prev, gallery: prev.gallery.filter(u => u !== url) }));
     deleteProjectImage(url);
+  };
+
+  const handleGalleryMove = (index: number, direction: -1 | 1) => {
+    setFormData(prev => {
+      const target = index + direction;
+      if (target < 0 || target >= prev.gallery.length) return prev;
+      const next = [...prev.gallery];
+      [next[index], next[target]] = [next[target], next[index]];
+      return { ...prev, gallery: next };
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -329,9 +341,15 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
 
                   {formData.gallery.length > 0 && (
                     <div className="grid grid-cols-3 gap-2">
-                      {formData.gallery.map((url) => (
+                      {formData.gallery.map((url, i) => (
                         <div key={url} className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 group">
                           <img src={url} alt="" className="w-full h-full object-cover" />
+
+                          {/* 현재 순서 표시 — 상세 페이지에 이 순서 그대로 나간다 */}
+                          <span className="absolute top-1 left-1 min-w-5 h-5 px-1 flex items-center justify-center bg-black/60 rounded-full text-white text-[10px] font-bold">
+                            {i + 1}
+                          </span>
+
                           <button
                             type="button"
                             onClick={() => handleGalleryRemove(url)}
@@ -339,6 +357,27 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
                           >
                             <X className="size-3.5" />
                           </button>
+
+                          <div className="absolute bottom-1 inset-x-1 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              type="button"
+                              onClick={() => handleGalleryMove(i, -1)}
+                              disabled={i === 0}
+                              aria-label={lang === 'ko' ? '앞으로 이동' : 'Move earlier'}
+                              className="p-1 bg-black/60 rounded-full text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <ChevronLeft className="size-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleGalleryMove(i, 1)}
+                              disabled={i === formData.gallery.length - 1}
+                              aria-label={lang === 'ko' ? '뒤로 이동' : 'Move later'}
+                              className="p-1 bg-black/60 rounded-full text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <ChevronRight className="size-3.5" />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
