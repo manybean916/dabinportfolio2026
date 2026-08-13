@@ -46,7 +46,7 @@ export const Hero = ({ lang }: HeroProps) => {
               글자 크기(12vw)에 비례하는 vw로 여백을 줘야 획이 잘리지 않는다 */}
           <MaskLine className="relative z-20 w-full py-[1.6vw]">
             <h1
-              className="text-center italic text-[#810000] leading-[0.85] tracking-[0.01em] text-[clamp(2.6rem,12vw,10.5rem)]"
+              className="text-center italic text-[#810000] leading-[0.85] tracking-[0.01em] text-[clamp(2.3rem,10vw,8.75rem)]"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               YOONDABIN
