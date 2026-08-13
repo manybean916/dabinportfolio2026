@@ -40,8 +40,8 @@ const t = (lang: 'ko' | 'en') => ({
   descriptionHint: lang === 'ko' ? '상세 페이지의 제목 아래에 표시됩니다' : 'Shown under the title on the detail page',
   gallery: lang === 'ko' ? '작업 과정 (여러 장)' : 'Work Gallery',
   galleryHint: lang === 'ko'
-    ? '상세 페이지에 이 순서 그대로 표시됩니다. 장당 10MB 이하 · 화살표로 순서 변경'
-    : 'Shown on the detail page in this order. Max 10MB per image · use the arrows to reorder',
+    ? '상세 페이지에 이 순서 그대로 표시됩니다. 장당 10MB 이하 · 드래그하거나 화살표로 순서 변경'
+    : 'Shown on the detail page in this order. Max 10MB per image · drag or use the arrows to reorder',
   galleryAdd: lang === 'ko' ? '이미지 추가' : 'Add Images',
   uploading: lang === 'ko' ? '업로드 중' : 'Uploading',
   cancel: lang === 'ko' ? '취소' : 'Cancel',
@@ -74,6 +74,8 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
   const [projectKey, setProjectKey] = useState(makeProjectKey);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
 
   const translateTitle = async () => {
     const text = formData.title.trim();
@@ -151,6 +153,37 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
       [next[index], next[target]] = [next[target], next[index]];
       return { ...prev, gallery: next };
     });
+  };
+
+  // 드래그 앤 드롭으로 순서 변경 — swap이 아니라 삽입 방식이라 옮긴 이미지를
+  // 원하는 자리에 정확히 끼워 넣고 나머지는 자연스럽게 밀린다.
+  const handleGalleryDragStart = (index: number) => (e: React.DragEvent) => {
+    setDragIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleGalleryDragOver = (index: number) => (e: React.DragEvent) => {
+    e.preventDefault();
+    if (dragIndex !== null && index !== overIndex) setOverIndex(index);
+  };
+
+  const handleGalleryDrop = (index: number) => (e: React.DragEvent) => {
+    e.preventDefault();
+    if (dragIndex !== null && dragIndex !== index) {
+      setFormData(prev => {
+        const next = [...prev.gallery];
+        const [moved] = next.splice(dragIndex, 1);
+        next.splice(index, 0, moved);
+        return { ...prev, gallery: next };
+      });
+    }
+    setDragIndex(null);
+    setOverIndex(null);
+  };
+
+  const handleGalleryDragEnd = () => {
+    setDragIndex(null);
+    setOverIndex(null);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -342,8 +375,22 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
                   {formData.gallery.length > 0 && (
                     <div className="grid grid-cols-3 gap-2">
                       {formData.gallery.map((url, i) => (
-                        <div key={url} className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 group">
-                          <img src={url} alt="" className="w-full h-full object-cover" />
+                        <div
+                          key={url}
+                          draggable
+                          onDragStart={handleGalleryDragStart(i)}
+                          onDragOver={handleGalleryDragOver(i)}
+                          onDrop={handleGalleryDrop(i)}
+                          onDragEnd={handleGalleryDragEnd}
+                          className={`relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 group cursor-grab active:cursor-grabbing transition-all ${
+                            dragIndex === i ? 'opacity-40' : ''
+                          } ${
+                            overIndex === i && dragIndex !== null && dragIndex !== i
+                              ? 'ring-2 ring-[#810000] ring-offset-1'
+                              : ''
+                          }`}
+                        >
+                          <img src={url} alt="" draggable={false} className="w-full h-full object-cover pointer-events-none" />
 
                           {/* 현재 순서 표시 — 상세 페이지에 이 순서 그대로 나간다 */}
                           <span className="absolute top-1 left-1 min-w-5 h-5 px-1 flex items-center justify-center bg-black/60 rounded-full text-white text-[10px] font-bold">
