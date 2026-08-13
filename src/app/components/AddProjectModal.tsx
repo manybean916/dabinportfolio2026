@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Upload, Plus, Edit2, Calendar, Wrench, FileText, Languages, PlayCircle, Github, User, Users } from 'lucide-react';
+import { X, Upload, Plus, Edit2, Calendar, Wrench, FileText, Languages, PlayCircle, Github, User, Users, Images, Loader2 } from 'lucide-react';
 import type { Project } from '../context/ProjectsContext';
+import { uploadProjectImages, deleteProjectImage, UploadError } from '../../lib/storage';
 
 interface AddProjectModalProps {
   isOpen: boolean;
@@ -37,6 +38,10 @@ const t = (lang: 'ko' | 'en') => ({
   team: lang === 'ko' ? '팀 작업' : 'Team',
   description: lang === 'ko' ? '프로젝트 설명' : 'Project Description',
   descriptionHint: lang === 'ko' ? '상세 페이지의 제목 아래에 표시됩니다' : 'Shown under the title on the detail page',
+  gallery: lang === 'ko' ? '작업 과정 (여러 장)' : 'Work Gallery',
+  galleryHint: lang === 'ko' ? '상세 페이지에 슬라이드로 표시됩니다. 장당 10MB 이하' : 'Shown as slides on the detail page. Max 10MB per image',
+  galleryAdd: lang === 'ko' ? '이미지 추가' : 'Add Images',
+  uploading: lang === 'ko' ? '업로드 중' : 'Uploading',
   cancel: lang === 'ko' ? '취소' : 'Cancel',
   save: lang === 'ko' ? '수정 완료' : 'Save Changes',
   add: lang === 'ko' ? '프로젝트 등록' : 'Add Project',
@@ -53,12 +58,20 @@ const emptyForm = {
   tools: '',
   teamType: 'solo' as 'solo' | 'team',
   description: '',
+  gallery: [] as string[],
 };
+
+/** Storage 경로에 쓸 임시 id. 새 프로젝트는 아직 Firebase key가 없어 이걸로 대신한다. */
+const makeProjectKey = () =>
+  (globalThis.crypto?.randomUUID?.() ?? `tmp-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 
 export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'add', lang = 'ko' }: AddProjectModalProps) => {
   const L = t(lang);
   const [formData, setFormData] = useState(emptyForm);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [projectKey, setProjectKey] = useState(makeProjectKey);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
 
   const translateTitle = async () => {
     const text = formData.title.trim();
@@ -94,15 +107,43 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
         tools: initialData.tools || '',
         teamType: initialData.teamType || 'solo',
         description: initialData.description || '',
+        gallery: initialData.gallery || [],
       });
+      // 기존 프로젝트는 Firebase key를 그대로 Storage 경로로 재사용한다
+      setProjectKey(initialData.id || makeProjectKey());
     } else {
       setFormData(emptyForm);
+      setProjectKey(makeProjectKey());
     }
   }, [initialData, isOpen]);
 
+  const handleGallerySelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    e.target.value = ''; // 같은 파일을 다시 선택할 수 있게 초기화
+    if (files.length === 0) return;
+
+    setIsUploading(true);
+    setUploadProgress({ done: 0, total: files.length });
+    try {
+      const urls = await uploadProjectImages(files, projectKey, (done, total) =>
+        setUploadProgress({ done, total })
+      );
+      setFormData(prev => ({ ...prev, gallery: [...prev.gallery, ...urls] }));
+    } catch (err) {
+      alert(err instanceof UploadError ? err.message : (lang === 'ko' ? '업로드에 실패했습니다.' : 'Upload failed.'));
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleGalleryRemove = (url: string) => {
+    setFormData(prev => ({ ...prev, gallery: prev.gallery.filter(u => u !== url) }));
+    deleteProjectImage(url);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim()) return;
+    if (!formData.title.trim() || isUploading) return;
     const today = new Date().toISOString().slice(0, 10);
     // Firebase는 undefined를 저장하지 못하므로 빈 값은 빈 문자열로 넘긴다
     onAdd({ ...formData, date: formData.date || today });
@@ -282,6 +323,54 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
                   />
                   <p className={hintCls}>{L.descriptionHint}</p>
                 </div>
+
+                <div className="space-y-2">
+                  <label className={labelCls}><Images className="size-4" />{L.gallery}</label>
+
+                  {formData.gallery.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2">
+                      {formData.gallery.map((url) => (
+                        <div key={url} className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 group">
+                          <img src={url} alt="" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => handleGalleryRemove(url)}
+                            className="absolute top-1 right-1 p-1 bg-black/60 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="size-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <label
+                    className={`flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm cursor-pointer transition-all ${
+                      isUploading ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" />
+                        {L.uploading} {uploadProgress.done}/{uploadProgress.total}
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="size-4" />
+                        {L.galleryAdd}
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleGallerySelect}
+                      disabled={isUploading}
+                      className="hidden"
+                    />
+                  </label>
+                  <p className={hintCls}>{L.galleryHint}</p>
+                </div>
               </form>
             </div>
 
@@ -296,7 +385,8 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
               <button
                 form="project-form"
                 type="submit"
-                className="flex-[2] px-6 py-3.5 bg-[#810000] text-white font-bold rounded-2xl hover:bg-[#1A1512] transition-all active:scale-95 flex items-center justify-center gap-2"
+                disabled={isUploading}
+                className="flex-[2] px-6 py-3.5 bg-[#810000] text-white font-bold rounded-2xl hover:bg-[#1A1512] transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {mode === 'edit' ? <Edit2 className="size-4" /> : <Plus className="size-4" />}
                 {mode === 'edit' ? L.save : L.add}

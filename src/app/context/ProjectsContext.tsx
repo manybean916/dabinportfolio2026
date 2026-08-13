@@ -9,6 +9,8 @@ export interface Project {
   category: string;
   /** 비워두면 제목을 바탕으로 썸네일을 자동 생성한다 */
   imageUrl?: string;
+  /** 상세 페이지에 슬라이드로 보여줄 작업 과정 이미지들 (Firebase Storage URL) */
+  gallery?: string[];
   description?: string;
   prototypeLink?: string;
   githubLink?: string;

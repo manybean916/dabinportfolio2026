@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// 사용법: Firebase Console → Storage → Rules 탭에 이 내용을 붙여넣고 게시(Publish)하세요.
+// (이 저장소에 firebase CLI 로그인이 없어 자동 배포는 불가능합니다.)
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /projects/{allPaths=**} {
+      // 누구나 볼 수 있어야 포트폴리오 페이지에서 이미지가 로드된다
+      allow read: if true;
+
+      // 업로드/삭제는 관리자 이메일로 로그인한 경우에만 허용한다
+      // (src/app/context/AuthContext.tsx의 ADMIN_EMAILS와 동일하게 유지할 것)
+      allow write: if request.auth != null
+        && request.auth.token.email in [
+          'yoondabin916@gmail.com',
+          'ekqlsdl0916@naver.com'
+        ]
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

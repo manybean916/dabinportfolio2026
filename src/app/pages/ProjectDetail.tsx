@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Link, useParams } from 'react-router';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { ProjectThumb, ProjectChips } from '../components/ProjectVisuals';
+import { ProjectGallery } from '../components/ProjectGallery';
 import { Footer } from '../components/Footer';
 import { useProjects } from '../context/ProjectsContext';
 
@@ -133,6 +134,8 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
               ))}
             </div>
           )}
+
+          <ProjectGallery images={project.gallery || []} lang={lang} />
 
           {nextProject && (
             <Link
