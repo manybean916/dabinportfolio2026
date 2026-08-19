@@ -6,6 +6,32 @@ import { Plus, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import type { Project } from '../context/ProjectsContext';
 
+/**
+ * 현재 브레이크포인트에 맞는 열 개수(1/2/3)를 추적한다.
+ * CSS columns는 브라우저가 "열 높이를 균등하게" 맞추는 걸 우선하다 보니
+ * 항목이 몇 개 없을 때 왼쪽 열은 텅 비워두고 오른쪽 열 하나에 몰아
+ * 쌓는 등 예측 못 한 배치가 나온다. 열 개수를 직접 알고 있어야
+ * 아이템을 좌→중→우로 순서대로 순환 배치할 수 있다.
+ */
+const useColumnCount = () => {
+  const [count, setCount] = React.useState(3);
+
+  React.useEffect(() => {
+    const mqLg = window.matchMedia('(min-width: 1024px)');
+    const mqMd = window.matchMedia('(min-width: 768px)');
+    const update = () => setCount(mqLg.matches ? 3 : mqMd.matches ? 2 : 1);
+    update();
+    mqLg.addEventListener('change', update);
+    mqMd.addEventListener('change', update);
+    return () => {
+      mqLg.removeEventListener('change', update);
+      mqMd.removeEventListener('change', update);
+    };
+  }, []);
+
+  return count;
+};
+
 interface PortfolioGridProps {
   projects: Project[];
   onAddClick: () => void;
@@ -144,6 +170,18 @@ const ProjectCard = ({
 
 export const PortfolioGrid = ({ projects, onAddClick, onEdit, onDelete, lang }: PortfolioGridProps) => {
   const { isAdmin } = useAuth();
+  const columnCount = useColumnCount();
+
+  // 좌→중→우 순서로 순환 배치한다. 각 열은 독립적으로 쌓이니 짧은
+  // 카드 밑에 빈 공간이 남지 않으면서도, 5번째 카드는 다시 왼쪽 열로
+  // 돌아와 처음 봤던 지그재그 리듬이 그대로 유지된다.
+  const columns: { project: Project; index: number }[][] = Array.from(
+    { length: columnCount },
+    () => []
+  );
+  projects.forEach((project, index) => {
+    columns[index % columnCount].push({ project, index });
+  });
 
   return (
     <section id="work" className="py-28 md:py-36 px-6 md:px-10 max-w-[1400px] mx-auto">
@@ -181,20 +219,19 @@ export const PortfolioGrid = ({ projects, onAddClick, onEdit, onDelete, lang }: 
           {lang === 'ko' ? '아직 등록된 프로젝트가 없습니다.' : 'No projects yet.'}
         </p>
       ) : (
-        // CSS grid는 같은 "행"에 놓인 카드들이 다 끝나야 다음 행이 시작돼서,
-        // 한 카드가 유독 길면(세로형 이미지·자동 생성 썸네일 등) 옆의 짧은
-        // 카드 밑에 빈 공간이 그대로 남는다. columns를 쓰면 각 열이 독립적으로
-        // 쌓여서, 짧은 카드는 바로 다음 카드가 붙는 진짜 메이슨리가 된다.
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-x-10">
-          {projects.map((project, index) => (
-            <div key={project.id || project.title + index} className="break-inside-avoid mb-20">
-              <ProjectCard
-                project={project}
-                index={index}
-                onEdit={() => onEdit(index)}
-                onDelete={() => onDelete(index)}
-                lang={lang}
-              />
+        <div className="flex gap-x-10">
+          {columns.map((col, c) => (
+            <div key={c} className="flex-1 min-w-0 flex flex-col gap-y-20">
+              {col.map(({ project, index }) => (
+                <ProjectCard
+                  key={project.id || project.title + index}
+                  project={project}
+                  index={index}
+                  onEdit={() => onEdit(index)}
+                  onDelete={() => onDelete(index)}
+                  lang={lang}
+                />
+              ))}
             </div>
           ))}
         </div>
