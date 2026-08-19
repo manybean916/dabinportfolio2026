@@ -38,8 +38,7 @@ const ProjectCard = ({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.1 }}
-      /* 가운데 열을 아래로 내려 엇갈린 리듬을 만든다 */
-      className={`group relative ${index % 3 === 1 ? 'lg:mt-28' : ''}`}
+      className="group relative"
     >
       {isAdmin && (
         <div className="absolute top-4 right-4 z-30">
@@ -182,18 +181,21 @@ export const PortfolioGrid = ({ projects, onAddClick, onEdit, onDelete, lang }: 
           {lang === 'ko' ? '아직 등록된 프로젝트가 없습니다.' : 'No projects yet.'}
         </p>
       ) : (
-        // items-start: 그리드 기본 stretch를 끄지 않으면 짧은(가로형) 카드가
-        // 같은 행의 긴(세로형) 카드 높이만큼 억지로 늘어나 빈 공간이 생긴다
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-24 items-start">
+        // CSS grid는 같은 "행"에 놓인 카드들이 다 끝나야 다음 행이 시작돼서,
+        // 한 카드가 유독 길면(세로형 이미지·자동 생성 썸네일 등) 옆의 짧은
+        // 카드 밑에 빈 공간이 그대로 남는다. columns를 쓰면 각 열이 독립적으로
+        // 쌓여서, 짧은 카드는 바로 다음 카드가 붙는 진짜 메이슨리가 된다.
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-x-10">
           {projects.map((project, index) => (
-            <ProjectCard
-              key={project.id || project.title + index}
-              project={project}
-              index={index}
-              onEdit={() => onEdit(index)}
-              onDelete={() => onDelete(index)}
-              lang={lang}
-            />
+            <div key={project.id || project.title + index} className="break-inside-avoid mb-20">
+              <ProjectCard
+                project={project}
+                index={index}
+                onEdit={() => onEdit(index)}
+                onDelete={() => onDelete(index)}
+                lang={lang}
+              />
+            </div>
           ))}
         </div>
       )}
