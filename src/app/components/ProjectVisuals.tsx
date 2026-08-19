@@ -17,7 +17,9 @@ export const resolveThumbUrl = (project: Project) => project.gallery?.[0] || pro
 
 /**
  * 썸네일이 없거나 불러오지 못했을 때 제목으로 만들어내는 대체 화면.
- * 실제 이미지와 달리 원본 비율이 없으므로 자체적으로 세로 비율 박스를 갖는다.
+ * 실제 이미지와 달리 원본 비율이 없으므로 자체적으로 비율 박스를 갖는다.
+ * 글자 하나만 떠 있는 화면이라 실제 사진만큼 세로로 길 필요는 없어서
+ * 4/3 정도로 짧게 잡는다 — 메이슨리에서 유독 커 보이지 않게.
  */
 const GeneratedThumb = ({ project }: { project: Project }) => {
   const tone = TONES[hashString(project.title || '') % TONES.length];
@@ -25,7 +27,7 @@ const GeneratedThumb = ({ project }: { project: Project }) => {
 
   return (
     <div
-      className="w-full aspect-[4/5] flex flex-col items-center justify-center gap-2 select-none"
+      className="w-full aspect-[4/3] flex flex-col items-center justify-center gap-2 select-none"
       style={{ backgroundColor: tone }}
       aria-hidden="true"
     >
