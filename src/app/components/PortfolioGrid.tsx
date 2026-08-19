@@ -221,7 +221,16 @@ export const PortfolioGrid = ({ projects, onAddClick, onEdit, onDelete, lang }: 
       ) : (
         <div className="flex gap-x-10">
           {columns.map((col, c) => (
-            <div key={c} className="flex-1 min-w-0 flex flex-col gap-y-20">
+            <div
+              key={c}
+              // 가운데 열만 살짝 위로 당겨서 3열이 나란히 시작하는 딱딱한
+              // 느낌 대신 지그재그 리듬을 만든다. 3열일 때만 의미가 있어
+              // lg에서만 적용한다 (columnCount가 3일 때 실제 뷰포트도
+              // lg 이상이므로 어긋나지 않는다).
+              className={`flex-1 min-w-0 flex flex-col gap-y-20 ${
+                columnCount === 3 && c === 1 ? 'lg:-mt-16' : ''
+              }`}
+            >
               {col.map(({ project, index }) => (
                 <ProjectCard
                   key={project.id || project.title + index}
