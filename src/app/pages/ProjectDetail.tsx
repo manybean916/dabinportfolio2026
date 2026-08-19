@@ -99,13 +99,13 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
             <p className={`${labelCls} text-[#80605C]`}>
               {project.category}
             </p>
-            <h1 className="mt-4 text-[clamp(1.75rem,3.6vw,2.75rem)] font-bold leading-[1.25] break-keep">
+            <h1 className="mt-4 text-[clamp(1.5rem,3vw,2.25rem)] font-bold leading-[1.3] break-keep">
               {title}
             </h1>
 
             {/* 프로젝트 설명은 제목 바로 아래에 놓인다 */}
             {project.description && (
-              <p className="mt-6 max-w-3xl text-base md:text-lg leading-[1.8] text-[#1A1512]/70 whitespace-pre-line break-keep">
+              <p className="mt-6 max-w-3xl text-sm md:text-base leading-[1.75] text-[#1A1512]/70 whitespace-pre-line break-keep">
                 {project.description}
               </p>
             )}
@@ -113,20 +113,21 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
             <ProjectChips project={project} lang={lang} className="mt-7" />
           </motion.div>
 
+          <ProjectGallery images={project.gallery || []} lang={lang} />
+
+          {/* 날짜·사용 툴·작업 형태는 이미지를 다 본 뒤 맨 아래에서 확인하도록 이동 */}
           {meta.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-14 pt-10 border-t border-[#1A1512]/15">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-10 border-t border-[#1A1512]/15">
               {meta.map((m) => (
                 <div key={m.label} className="space-y-2">
                   <span className={`${labelCls} text-[#1A1512]/45`}>
                     {m.label}
                   </span>
-                  <p className="text-base font-medium break-keep">{m.value}</p>
+                  <p className="text-sm font-medium break-keep">{m.value}</p>
                 </div>
               ))}
             </div>
           )}
-
-          <ProjectGallery images={project.gallery || []} lang={lang} />
 
           {nextProject && (
             <Link
@@ -137,7 +138,7 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
                 <span className={`${labelCls} text-[#1A1512]/45`}>
                   {lang === 'ko' ? '다음 프로젝트' : 'Next project'}
                 </span>
-                <p className="mt-3 text-2xl md:text-3xl font-bold break-keep group-hover:text-[#80605C] transition-colors">
+                <p className="mt-3 text-xl md:text-2xl font-bold break-keep group-hover:text-[#80605C] transition-colors">
                   {lang === 'en' && nextProject.titleEn ? nextProject.titleEn : nextProject.title}
                 </p>
               </div>
