@@ -40,25 +40,16 @@ export const Hero = ({ lang }: HeroProps) => {
           </p>
         </MaskLine>
 
-        {/* 이름이 컬러 블록 위로 겹치는 에디토리얼 구성 */}
-        <div className="relative flex flex-col items-center mt-6">
-          {/* leading이 0.85라 글자가 박스를 넘친다. 래퍼 em은 부모(16px) 기준이라
-              글자 크기(12vw)에 비례하는 vw로 여백을 줘야 획이 잘리지 않는다 */}
-          <MaskLine className="relative z-20 w-full py-[1.6vw]">
-            <h1
-              className="text-center italic text-[#810000] leading-[0.85] tracking-[0.01em] text-[clamp(2.3rem,10vw,8.75rem)]"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
-              YOONDABIN
-            </h1>
-          </MaskLine>
-
-          {/* 이미지 대신 컬러 블록 */}
-          <motion.div
-            variants={riseUp}
-            className="relative z-10 -mt-[0.3em] w-[44vw] max-w-[300px] aspect-[3/4] bg-[#EAE3DF]"
-          />
-        </div>
+        {/* leading이 0.85라 글자가 박스를 넘친다. 래퍼 em은 부모(16px) 기준이라
+            글자 크기(12vw)에 비례하는 vw로 여백을 줘야 획이 잘리지 않는다 */}
+        <MaskLine className="mt-6 w-full py-[1.6vw]">
+          <h1
+            className="text-center italic text-[#810000] leading-[0.85] tracking-[0.01em] text-[clamp(2.3rem,10vw,8.75rem)]"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            YOONDABIN
+          </h1>
+        </MaskLine>
 
         <MaskLine className="mt-14 py-[0.1em]">
           {/* ZEN Serif는 400 한 가지 굵기뿐이라 굵게 지정하지 않는다 (가짜 볼드 방지) */}
