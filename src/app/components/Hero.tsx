@@ -95,7 +95,7 @@ export const Hero = ({ lang }: HeroProps) => {
             </span>
             <div className="flex items-center gap-2.5">
               <a
-                href="https://www.instagram.com/toomanybean?igsh=MTc5bGlueWRwbzh0eQ%3D%3D&utm_source=qr"
+                href="https://www.instagram.com/bean.folder?stkn=ZXE0YXhvODZnZ29l&utm_source=qr"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2.5 rounded-full border border-[#1A1512]/20 text-[#1A1512]/60 hover:bg-[#80605C] hover:text-[#FAF9F7] hover:border-[#80605C] transition-colors"

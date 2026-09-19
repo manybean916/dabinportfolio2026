@@ -54,7 +54,7 @@ export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
 
           <div className="flex items-center gap-3">
             <a
-              href="https://www.instagram.com/toomanybean?igsh=MTc5bGlueWRwbzh0eQ%3D%3D&utm_source=qr"
+              href="https://www.instagram.com/bean.folder?stkn=ZXE0YXhvODZnZ29l&utm_source=qr"
               target="_blank"
               rel="noopener noreferrer"
               className="p-3 rounded-full border border-[#FAF9F7]/35 hover:bg-[#FAF9F7] hover:text-[#810000] transition-colors"
