@@ -83,17 +83,11 @@ export const Hero = ({ lang }: HeroProps) => {
           </a>
         </motion.div>
 
-        {/* 소개 문단 + 소셜 */}
+        {/* 소셜 */}
         <motion.div
           variants={riseUp}
-          className="mt-24 flex flex-col md:flex-row md:items-end justify-between gap-10 border-t border-[#1A1512]/15 pt-10"
+          className="mt-24 flex flex-col md:flex-row md:items-end md:justify-end gap-10 border-t border-[#1A1512]/15 pt-10"
         >
-          <p className="max-w-lg text-[15px] leading-[1.8] text-[#1A1512]/70 break-keep">
-            {lang === 'ko'
-              ? '브랜드의 정체성을 유연한 인터랙션과 감각적인 UX로 시각화하고, 기획과 디자인의 경계를 허물어, 명확한 비전으로 팀과 제품의 성장을 함께 이끕니다.'
-              : 'I visualize brand identity through flexible interactions and considered UX — dissolving the line between planning and design, and driving the growth of teams and products with a clear vision.'}
-          </p>
-
           <div className="flex flex-col gap-3 md:items-end shrink-0">
             {/* 장식용 라벨은 자간이 넓어야 어울려서 언어와 무관하게 영문으로 둔다 */}
             <span className="text-[11px] font-bold tracking-[0.25em] uppercase text-[#1A1512]/45">
