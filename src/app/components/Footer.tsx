@@ -2,6 +2,9 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Instagram, Mail, Github, ArrowUpRight } from 'lucide-react';
 
+// 인스타그램 작업물이 준비되면 true로 바꾸면 아이콘이 다시 나타난다
+const SHOW_INSTAGRAM = false;
+
 export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
   const currentYear = new Date().getFullYear();
 
@@ -53,15 +56,17 @@ export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
           </span>
 
           <div className="flex items-center gap-3">
-            <a
-              href="https://www.instagram.com/bean.folder?stkn=ZXE0YXhvODZnZ29l&utm_source=qr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full border border-[#FAF9F7]/35 hover:bg-[#FAF9F7] hover:text-[#810000] transition-colors"
-              aria-label="Instagram"
-            >
-              <Instagram className="size-5" />
-            </a>
+            {SHOW_INSTAGRAM && (
+              <a
+                href="https://www.instagram.com/bean.folder?stkn=ZXE0YXhvODZnZ29l&utm_source=qr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-full border border-[#FAF9F7]/35 hover:bg-[#FAF9F7] hover:text-[#810000] transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="size-5" />
+              </a>
+            )}
             <a
               href="https://mail.google.com/mail/?view=cm&fs=1&to=yoondabin916@gmail.com"
               target="_blank"
