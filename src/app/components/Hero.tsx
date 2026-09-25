@@ -35,7 +35,7 @@ const MaskLine = ({ children, className = '' }: { children: React.ReactNode; cla
 
 export const Hero = ({ lang }: HeroProps) => {
   return (
-    <section id="home" className="pt-36 pb-24 px-6 md:px-10 max-w-[1400px] mx-auto overflow-hidden">
+    <section id="home" className="pt-36 pb-6 px-6 md:px-10 max-w-[1400px] mx-auto overflow-hidden">
       <motion.div variants={container} initial="hidden" animate="show">
         <MaskLine className="py-[0.2em]">
           <p className="text-center text-[11px] md:text-xs font-bold tracking-[0.35em] uppercase text-[#80605C]">
@@ -45,9 +45,9 @@ export const Hero = ({ lang }: HeroProps) => {
 
         {/* leading이 0.85라 글자가 박스를 넘친다. 래퍼 em은 부모(16px) 기준이라
             글자 크기(12vw)에 비례하는 vw로 여백을 줘야 획이 잘리지 않는다 */}
-        <MaskLine className="mt-6 w-full py-[1.6vw]">
+        <MaskLine className="mt-6 w-full py-[1.3vw]">
           <h1
-            className="text-center italic text-[#810000] leading-[0.85] tracking-[0.01em] text-[clamp(2.3rem,10vw,8.75rem)]"
+            className="text-center italic text-[#810000] leading-[0.85] tracking-[0.01em] text-[clamp(2rem,8vw,7rem)]"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             YOONDABIN
