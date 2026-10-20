@@ -90,7 +90,9 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
       </header>
 
       <main className="pt-36 pb-28">
-        <article className="max-w-5xl mx-auto px-6 md:px-10">
+        {/* 헤더 글·갤러리·메타·다음 프로젝트가 모두 같은 폭(1400px)과 좌우 여백을 쓴다.
+            글만 좁은 칸에 넣으면 이미지와 좌우 끝선이 어긋난다 */}
+        <article className="max-w-[1400px] mx-auto px-6 md:px-10">
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
@@ -99,25 +101,28 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
             <p className={`${labelCls} text-[#80605C]`}>
               {project.category}
             </p>
-            <h1 className="mt-4 text-[clamp(1.5rem,3vw,2.25rem)] font-bold leading-[1.3] break-keep">
-              {title}
-            </h1>
 
-            {/* 프로젝트 설명은 제목 바로 아래에 놓인다 */}
-            {project.description && (
-              <p className="mt-6 max-w-3xl text-sm md:text-base leading-[1.75] text-[#1A1512]/70 whitespace-pre-line break-keep">
-                {project.description}
-              </p>
-            )}
+            {/* 데스크톱에선 제목·링크는 왼쪽, 설명은 오른쪽에 두어 양쪽 끝이 이미지와 맞는다 */}
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-12 gap-x-10 gap-y-8">
+              <div className={project.description ? 'md:col-span-5' : 'md:col-span-12'}>
+                <h1 className="text-[clamp(1.5rem,3vw,2.25rem)] font-bold leading-[1.3] break-keep">
+                  {title}
+                </h1>
+                <ProjectChips project={project} lang={lang} className="mt-7" />
+              </div>
 
-            <ProjectChips project={project} lang={lang} className="mt-7" />
+              {project.description && (
+                <p className="md:col-span-7 text-sm md:text-base leading-[1.75] text-[#1A1512]/70 whitespace-pre-line break-keep">
+                  {project.description}
+                </p>
+              )}
+            </div>
           </motion.div>
         </article>
 
-        {/* 갤러리는 글 영역보다 넓게 펼쳐서 롱페이지처럼 보이게 한다 */}
         <ProjectGallery images={project.gallery || []} lang={lang} />
 
-        <div className="max-w-5xl mx-auto px-6 md:px-10">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10">
           {/* 날짜·사용 툴·작업 형태는 이미지를 다 본 뒤 맨 아래에서 확인하도록 이동 */}
           {meta.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-10 border-t border-[#1A1512]/15">

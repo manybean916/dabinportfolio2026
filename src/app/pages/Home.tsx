@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navbar } from '../components/Navbar';
-import { Hero } from '../components/Hero';
-import { PortfolioGrid } from '../components/PortfolioGrid';
+import { Intro } from '../components/Intro';
+import { ProjectShowcase } from '../components/ProjectShowcase';
 import { Footer } from '../components/Footer';
 import { AddProjectModal } from '../components/AddProjectModal';
 import { LoginModal } from '../components/LoginModal';
@@ -103,14 +103,14 @@ export const Home = ({ lang, onToggleLang }: HomeProps) => {
       style={{ fontFamily: 'var(--font-pretendard)' }}
     >
       <Navbar lang={lang} onToggleLang={onToggleLang} onLoginClick={() => setIsLoginModalOpen(true)} />
-      <main>
-        <Hero lang={lang} />
+      <main id="home">
+        <Intro />
         {isLoading ? (
-          <div className="py-32 text-center text-[#1A1512]/40 font-bold">
+          <div className="pt-24 pb-32 text-center text-[#1A1512]/40 font-bold">
             {lang === 'ko' ? '로딩 중...' : 'Loading...'}
           </div>
         ) : (
-          <PortfolioGrid
+          <ProjectShowcase
             lang={lang}
             projects={projects}
             onAddClick={() => {
