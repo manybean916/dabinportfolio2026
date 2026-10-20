@@ -21,13 +21,6 @@ export const Navbar = ({ lang, onToggleLang, onLoginClick }: NavbarProps) => {
     }, 500);
   };
 
-  // 내비게이션·버튼 등 UI 크롬은 언어와 무관하게 영문으로 통일한다
-  const navLinks = [
-    { label: 'Home', href: '#home' },
-    { label: 'Work', href: '#work' },
-    { label: 'Contact', href: '#contact' },
-  ];
-
   return (
     <>
       <AnimatePresence>
@@ -42,8 +35,8 @@ export const Navbar = ({ lang, onToggleLang, onLoginClick }: NavbarProps) => {
         )}
       </AnimatePresence>
 
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FAF9F7]/90 backdrop-blur-md border-b border-[#1A1512]/10">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-20 flex items-center justify-between gap-6">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FAF9F7]/85 backdrop-blur-md">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-16 flex items-center justify-between gap-6">
           <a
             href="#home"
             className="text-lg md:text-xl italic tracking-[0.06em] text-[#810000] shrink-0"
@@ -52,19 +45,15 @@ export const Navbar = ({ lang, onToggleLang, onLoginClick }: NavbarProps) => {
             YOONDABIN
           </a>
 
-          <div className="hidden md:flex items-center gap-10">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-[#1A1512]/70 hover:text-[#80605C] transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
+          <div className="flex items-center gap-5 shrink-0">
+            {/* UI 크롬은 언어와 무관하게 영문으로 통일한다 */}
+            <a
+              href="#contact"
+              className="text-sm font-medium text-[#1A1512]/70 hover:text-[#810000] transition-colors"
+            >
+              Contact
+            </a>
 
-          <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={onToggleLang}
               className="text-xs font-bold tracking-wider text-[#1A1512]/60 hover:text-[#1A1512] transition-colors"
