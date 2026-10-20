@@ -12,8 +12,12 @@ const hashString = (s: string) => {
 
 const TONES = ['#EAE3DF', '#E6DED9', '#E1D8D2', '#EFEAE6', '#DCD3CD'];
 
-/** 갤러리 1번째 이미지를 우선하고, 없으면 수동으로 넣은 썸네일 URL을 쓴다 */
-export const resolveThumbUrl = (project: Project) => project.gallery?.[0] || project.imageUrl;
+/**
+ * 따로 올린 썸네일을 우선하고, 없으면 갤러리 1번째 이미지를 쓴다.
+ * 롱페이지처럼 갤러리 첫 장이 세로로 길어도 메인 카드가 같이 길어지지 않도록
+ * 카드용 이미지를 따로 지정할 수 있게 한 것이다.
+ */
+export const resolveThumbUrl = (project: Project) => project.imageUrl || project.gallery?.[0];
 
 /**
  * 썸네일이 없거나 불러오지 못했을 때 제목으로 만들어내는 대체 화면.
