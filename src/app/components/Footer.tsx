@@ -22,10 +22,10 @@ export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
             Get in touch
           </p>
 
-          {/* 세리프는 공통. 한글엔 이탤릭체가 없어 영문일 때만 기울인다 */}
+          {/* 히어로 한 줄 소개와 같은 서체·크기·줄 간격. 한글엔 이탤릭체가 없어 영문일 때만 기울인다 */}
           <h2
-            className={`mt-8 leading-[1.25] text-[clamp(2rem,5.5vw,4rem)] break-keep ${
-              lang === 'ko' ? '' : 'italic leading-[1.05]'
+            className={`mt-8 mx-auto max-w-3xl text-[21px] md:text-[30px] font-medium leading-[1.5] break-keep ${
+              lang === 'ko' ? '' : 'italic'
             }`}
             style={{ fontFamily: 'var(--font-display)' }}
           >
@@ -49,7 +49,7 @@ export const Footer = ({ lang }: { lang: 'ko' | 'en' }) => {
 
         <div className="mt-28 pt-10 border-t border-[#FAF9F7]/25 flex flex-col md:flex-row items-center justify-between gap-8">
           <span
-            className="text-2xl md:text-3xl italic tracking-[0.06em]"
+            className="text-lg md:text-xl font-normal italic tracking-[0.06em] text-[#FAF9F7]/85"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             YOONDABIN

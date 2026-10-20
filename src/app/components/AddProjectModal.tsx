@@ -25,10 +25,13 @@ const t = (lang: 'ko' | 'en') => ({
   translateFail: lang === 'ko' ? '번역 실패, 직접 입력해 주세요.' : 'Translation failed, please enter manually.',
   category: lang === 'ko' ? '카테고리' : 'Category',
   categoryPh: lang === 'ko' ? '예: UX Research, UI Design' : 'e.g., UX Research, UI Design',
-  image: lang === 'ko' ? '썸네일 이미지 URL (직접 지정, 선택)' : 'Thumbnail Image URL (manual override)',
+  image: lang === 'ko' ? '썸네일 이미지 (메인 카드용, 선택)' : 'Thumbnail Image (for the main card, optional)',
   imageHint: lang === 'ko'
-    ? '작업 과정의 1번째 이미지가 있으면 그게 우선 사용됩니다. 둘 다 없으면 제목을 바탕으로 자동 생성됩니다'
-    : "The first Work Gallery image is used first if present. If neither exists, a thumbnail is generated from the title",
+    ? '따로 올리면 이 이미지가 메인 카드에 쓰입니다. 없으면 작업 과정의 1번째 이미지, 둘 다 없으면 제목을 바탕으로 자동 생성됩니다'
+    : "If uploaded, this image is used on the main card. Otherwise the first Work Gallery image is used; if neither exists, a thumbnail is generated from the title",
+  thumbAdd: lang === 'ko' ? '썸네일 올리기' : 'Upload Thumbnail',
+  thumbReplace: lang === 'ko' ? '교체' : 'Replace',
+  thumbRemove: lang === 'ko' ? '삭제' : 'Remove',
   prototypeLink: lang === 'ko' ? '프로토타입 링크' : 'Prototype Link',
   githubLink: lang === 'ko' ? 'GitHub 링크' : 'GitHub Link',
   linkHint: lang === 'ko' ? '입력하면 카드와 상세 페이지에 칩으로 표시됩니다' : 'Shown as a chip on the card and detail page',
@@ -42,8 +45,8 @@ const t = (lang: 'ko' | 'en') => ({
   descriptionHint: lang === 'ko' ? '상세 페이지의 제목 아래에 표시됩니다' : 'Shown under the title on the detail page',
   gallery: lang === 'ko' ? '작업 과정 (여러 장)' : 'Work Gallery',
   galleryHint: lang === 'ko'
-    ? '1번째 이미지가 메인 페이지 썸네일로 자동 사용됩니다. 상세 페이지엔 이 순서 그대로 표시됩니다. 장당 10MB 이하 · 드래그하거나 화살표로 순서 변경'
-    : 'The 1st image is used as the main page thumbnail automatically. Shown on the detail page in this order. Max 10MB per image · drag or use the arrows to reorder',
+    ? '상세 페이지에 이 순서 그대로 이어 붙여 표시됩니다. 썸네일을 따로 올리지 않으면 1번째 이미지가 메인 카드 썸네일로 쓰입니다. 장당 10MB 이하 · 드래그하거나 화살표로 순서 변경'
+    : 'Shown stacked on the detail page in this order. If no thumbnail is uploaded, the 1st image is used as the main card thumbnail. Max 10MB per image · drag or use the arrows to reorder',
   galleryAdd: lang === 'ko' ? '이미지 추가' : 'Add Images',
   uploading: lang === 'ko' ? '업로드 중' : 'Uploading',
   cancel: lang === 'ko' ? '취소' : 'Cancel',
@@ -75,6 +78,7 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
   const [isTranslating, setIsTranslating] = useState(false);
   const [projectKey, setProjectKey] = useState(makeProjectKey);
   const [isUploading, setIsUploading] = useState(false);
+  const [isThumbUploading, setIsThumbUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
@@ -142,6 +146,26 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
     }
   };
 
+  const handleThumbSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setIsThumbUploading(true);
+    try {
+      const [url] = await uploadProjectImages([file], projectKey);
+      setFormData(prev => ({ ...prev, imageUrl: url }));
+    } catch (err) {
+      alert(err instanceof UploadError ? err.message : (lang === 'ko' ? '업로드에 실패했습니다.' : 'Upload failed.'));
+    } finally {
+      setIsThumbUploading(false);
+    }
+  };
+
+  // 교체·삭제해도 Storage의 이전 파일은 지우지 않는다. 저장 전에 취소하면
+  // 기존 프로젝트가 여전히 그 URL을 가리키고 있어서, 지우면 썸네일이 깨진다.
+  const handleThumbRemove = () => setFormData(prev => ({ ...prev, imageUrl: '' }));
+
   const handleGalleryRemove = (url: string) => {
     setFormData(prev => ({ ...prev, gallery: prev.gallery.filter(u => u !== url) }));
     deleteProjectImage(url);
@@ -190,7 +214,7 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim() || isUploading) return;
+    if (!formData.title.trim() || isUploading || isThumbUploading) return;
     const today = new Date().toISOString().slice(0, 10);
     // Firebase는 undefined를 저장하지 못하므로 빈 값은 빈 문자열로 넘긴다
     onAdd({ ...formData, date: formData.date || today });
@@ -275,22 +299,51 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
 
                 <div className="space-y-2">
                   <label className={labelCls}>{L.image}</label>
-                  <div className="relative">
-                    <input
-                      type="url"
-                      value={formData.imageUrl}
-                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                      placeholder="https://..."
-                      className={`${inputCls} pr-12`}
-                    />
-                    <Upload className="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-gray-400 pointer-events-none" />
-                  </div>
-                  <p className={hintCls}>{L.imageHint}</p>
+
                   {formData.imageUrl && (
-                    <div className="mt-3 aspect-video w-full rounded-2xl overflow-hidden bg-gray-100">
-                      <img src={formData.imageUrl} alt="" className="w-full h-full object-cover" />
+                    // 메인 카드와 같은 방식으로 원본 비율 그대로 미리 보여준다
+                    <div className="rounded-2xl overflow-hidden bg-gray-100">
+                      <img src={formData.imageUrl} alt="" className="w-full h-auto max-h-72 object-contain" />
                     </div>
                   )}
+
+                  <div className="flex gap-2">
+                    <label
+                      className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm cursor-pointer transition-all ${
+                        isThumbUploading ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      {isThumbUploading ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin" />
+                          {L.uploading}
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="size-4" />
+                          {formData.imageUrl ? L.thumbReplace : L.thumbAdd}
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThumbSelect}
+                        disabled={isThumbUploading}
+                        className="hidden"
+                      />
+                    </label>
+                    {formData.imageUrl && (
+                      <button
+                        type="button"
+                        onClick={handleThumbRemove}
+                        disabled={isThumbUploading}
+                        className="px-5 py-3.5 rounded-2xl font-bold text-sm bg-gray-50 text-[#810000] hover:bg-[#810000]/10 transition-all disabled:opacity-40"
+                      >
+                        {L.thumbRemove}
+                      </button>
+                    )}
+                  </div>
+                  <p className={hintCls}>{L.imageHint}</p>
                 </div>
 
                 <div className="space-y-2">
@@ -473,7 +526,7 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
               <button
                 form="project-form"
                 type="submit"
-                disabled={isUploading}
+                disabled={isUploading || isThumbUploading}
                 className="flex-[2] px-6 py-3.5 bg-[#810000] text-white font-bold rounded-2xl hover:bg-[#1A1512] transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {mode === 'edit' ? <Edit2 className="size-4" /> : <Plus className="size-4" />}

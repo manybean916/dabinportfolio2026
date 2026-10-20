@@ -112,9 +112,12 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
 
             <ProjectChips project={project} lang={lang} className="mt-7" />
           </motion.div>
+        </article>
 
-          <ProjectGallery images={project.gallery || []} lang={lang} />
+        {/* 갤러리는 글 영역보다 넓게 펼쳐서 롱페이지처럼 보이게 한다 */}
+        <ProjectGallery images={project.gallery || []} lang={lang} />
 
+        <div className="max-w-5xl mx-auto px-6 md:px-10">
           {/* 날짜·사용 툴·작업 형태는 이미지를 다 본 뒤 맨 아래에서 확인하도록 이동 */}
           {meta.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-10 border-t border-[#1A1512]/15">
@@ -147,7 +150,7 @@ export const ProjectDetail = ({ lang, onToggleLang }: ProjectDetailProps) => {
               </span>
             </Link>
           )}
-        </article>
+        </div>
       </main>
 
       <Footer lang={lang} />

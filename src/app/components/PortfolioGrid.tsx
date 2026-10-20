@@ -184,7 +184,7 @@ export const PortfolioGrid = ({ projects, onAddClick, onEdit, onDelete, lang }: 
   });
 
   return (
-    <section id="work" className="py-28 md:py-36 px-6 md:px-10 max-w-[1400px] mx-auto">
+    <section id="work" className="pt-16 md:pt-20 pb-28 md:pb-36 px-6 md:px-10 max-w-[1400px] mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-20">
         {/* 마스크 뒤에서 밀려 올라오는 등장 */}
         <div className="overflow-hidden py-[1vw]">
