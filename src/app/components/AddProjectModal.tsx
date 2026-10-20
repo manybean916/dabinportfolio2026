@@ -7,7 +7,8 @@ import { uploadProjectImages, deleteProjectImage, UploadError } from '../../lib/
 interface AddProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (project: Project) => void;
+  /** removedUrls는 이 창에서 뺀 기존 이미지들. 저장이 끝난 뒤에 Storage에서 지우도록 호출한 쪽에 넘긴다 */
+  onAdd: (project: Project, removedUrls: string[]) => void;
   initialData?: Project | null;
   mode?: 'add' | 'edit';
   lang?: 'ko' | 'en';
@@ -83,6 +84,32 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
 
+  // 이 창을 연 뒤 새로 올린 파일들. 저장 전에는 어떤 프로젝트도 가리키지 않아서
+  // 빼거나 취소하면 바로 지워도 안전하다.
+  const uploadedRef = React.useRef<string[]>([]);
+  // 저장돼 있던 이미지를 이 창에서 뺀 것들. 저장 전에 취소하면 프로젝트가 여전히 가리키고 있어서
+  // 지금 지우면 사이트에 깨진 이미지가 생기므로, 저장이 끝난 뒤에 지우도록 넘긴다.
+  const removalsRef = React.useRef<string[]>([]);
+
+  /** 폼에서 이미지가 빠졌을 때: 방금 올린 거면 바로 지우고, 저장돼 있던 거면 삭제 예정으로 미룬다 */
+  const discardImage = (url: string) => {
+    if (!url) return;
+    if (uploadedRef.current.includes(url)) {
+      uploadedRef.current = uploadedRef.current.filter(u => u !== url);
+      deleteProjectImage(url);
+    } else if (!removalsRef.current.includes(url)) {
+      removalsRef.current.push(url);
+    }
+  };
+
+  /** 저장하지 않고 닫을 때: 이번에 올렸다가 저장 못 한 파일을 정리한다 */
+  const handleClose = () => {
+    uploadedRef.current.forEach(url => deleteProjectImage(url));
+    uploadedRef.current = [];
+    removalsRef.current = [];
+    onClose();
+  };
+
   const translateTitle = async () => {
     const text = formData.title.trim();
     if (!text) return;
@@ -105,6 +132,8 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
   };
 
   React.useEffect(() => {
+    uploadedRef.current = [];
+    removalsRef.current = [];
     if (initialData) {
       setFormData({
         title: initialData.title || '',
@@ -138,6 +167,7 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
       const urls = await uploadProjectImages(files, projectKey, (done, total) =>
         setUploadProgress({ done, total })
       );
+      uploadedRef.current.push(...urls);
       setFormData(prev => ({ ...prev, gallery: [...prev.gallery, ...urls] }));
     } catch (err) {
       alert(err instanceof UploadError ? err.message : (lang === 'ko' ? '업로드에 실패했습니다.' : 'Upload failed.'));
@@ -154,6 +184,8 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
     setIsThumbUploading(true);
     try {
       const [url] = await uploadProjectImages([file], projectKey);
+      uploadedRef.current.push(url);
+      discardImage(formData.imageUrl); // 교체되는 이전 썸네일
       setFormData(prev => ({ ...prev, imageUrl: url }));
     } catch (err) {
       alert(err instanceof UploadError ? err.message : (lang === 'ko' ? '업로드에 실패했습니다.' : 'Upload failed.'));
@@ -162,13 +194,14 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
     }
   };
 
-  // 교체·삭제해도 Storage의 이전 파일은 지우지 않는다. 저장 전에 취소하면
-  // 기존 프로젝트가 여전히 그 URL을 가리키고 있어서, 지우면 썸네일이 깨진다.
-  const handleThumbRemove = () => setFormData(prev => ({ ...prev, imageUrl: '' }));
+  const handleThumbRemove = () => {
+    discardImage(formData.imageUrl);
+    setFormData(prev => ({ ...prev, imageUrl: '' }));
+  };
 
   const handleGalleryRemove = (url: string) => {
     setFormData(prev => ({ ...prev, gallery: prev.gallery.filter(u => u !== url) }));
-    deleteProjectImage(url);
+    discardImage(url);
   };
 
   const handleGalleryMove = (index: number, direction: -1 | 1) => {
@@ -217,7 +250,10 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
     if (!formData.title.trim() || isUploading || isThumbUploading) return;
     const today = new Date().toISOString().slice(0, 10);
     // Firebase는 undefined를 저장하지 못하므로 빈 값은 빈 문자열로 넘긴다
-    onAdd({ ...formData, date: formData.date || today });
+    onAdd({ ...formData, date: formData.date || today }, [...removalsRef.current]);
+    // 올린 파일은 이제 프로젝트가 가리키므로 취소 정리 대상에서 뺀다
+    uploadedRef.current = [];
+    removalsRef.current = [];
     onClose();
   };
 
@@ -233,7 +269,7 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
           />
           <motion.div
@@ -246,7 +282,7 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
               <h2 className="text-2xl font-bold tracking-tight text-gray-900">
                 {mode === 'edit' ? L.editTitle : L.addTitle}
               </h2>
-              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <button onClick={handleClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <X className="size-5 text-gray-500" />
               </button>
             </div>
@@ -518,7 +554,7 @@ export const AddProjectModal = ({ isOpen, onClose, onAdd, initialData, mode = 'a
             <div className="p-6 bg-gray-50/50 flex gap-3 border-t border-gray-100">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={handleClose}
                 className="flex-1 px-6 py-3.5 bg-white border border-gray-200 text-gray-600 font-bold rounded-2xl hover:bg-gray-100 transition-all active:scale-95"
               >
                 {L.cancel}

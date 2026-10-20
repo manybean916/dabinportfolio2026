@@ -26,7 +26,11 @@ export interface Project {
 interface ProjectsContextType {
   projects: Project[];
   isLoading: boolean;
-  saveProject: (project: Project, editingIndex: number | null) => Promise<void>;
+  /**
+   * DB에 실제로 저장됐는지 돌려준다. 저장에 실패해도 이 화면에는 반영하지만 false를 돌려주므로,
+   * 호출하는 쪽은 "DB에 저장된 뒤에만" 할 수 있는 일(예: Storage 파일 삭제)을 true일 때만 해야 한다.
+   */
+  saveProject: (project: Project, editingIndex: number | null) => Promise<boolean>;
   deleteProject: (index: number) => Promise<void>;
 }
 
@@ -74,8 +78,9 @@ export const ProjectsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     fetchProjects();
   }, []);
 
-  const saveProject = async (newProject: Project, editingIndex: number | null) => {
+  const saveProject = async (newProject: Project, editingIndex: number | null): Promise<boolean> => {
     const now = Date.now();
+    let persisted = false;
 
     if (editingIndex !== null) {
       const projectId = projects[editingIndex].id;
@@ -87,6 +92,7 @@ export const ProjectsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       try {
         await set(ref(db, `projects/${projectId}`), updatedProject);
+        persisted = true;
       } catch (e) {
         console.warn("Database update failed, updating local state only");
       }
@@ -102,12 +108,15 @@ export const ProjectsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const newProjectRef = push(ref(db, "projects"));
         await set(newProjectRef, newProjectWithTime);
         if (newProjectRef.key) newId = newProjectRef.key;
+        persisted = true;
       } catch (e) {
         console.warn("Database add failed, using local state only");
       }
 
       setProjects(sortByUpdated([{ ...newProjectWithTime, id: newId }, ...projects]));
     }
+
+    return persisted;
   };
 
   const deleteProject = async (index: number) => {

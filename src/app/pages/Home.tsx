@@ -7,6 +7,7 @@ import { AddProjectModal } from '../components/AddProjectModal';
 import { LoginModal } from '../components/LoginModal';
 import { useAuth } from '../context/AuthContext';
 import { useProjects } from '../context/ProjectsContext';
+import { deleteProjectImage } from '../../lib/storage';
 import { toast } from 'sonner';
 
 interface HomeProps {
@@ -49,19 +50,31 @@ export const Home = ({ lang, onToggleLang }: HomeProps) => {
     return () => { document.removeEventListener('click', handleAnchorClick); };
   }, []);
 
-  const handleAddProject = async (newProject: any) => {
+  const handleAddProject = async (newProject: any, removedUrls: string[] = []) => {
     if (!isAdmin) {
       toast.error(lang === 'ko' ? '권한이 없습니다.' : 'You do not have permission.');
       return;
     }
 
     try {
-      await saveProject(newProject, editingIndex);
-      toast.success(
-        editingIndex !== null
-          ? (lang === 'ko' ? '프로젝트가 성공적으로 수정되었습니다.' : 'Project successfully updated.')
-          : (lang === 'ko' ? '새 프로젝트가 추가되었습니다.' : 'New project added.')
-      );
+      const persisted = await saveProject(newProject, editingIndex);
+
+      if (!persisted) {
+        // DB에 저장되지 않았으면 빼낸 이미지를 지우지 않는다 — 지우면 프로젝트가 없는 파일을 가리키게 된다
+        toast.warning(
+          lang === 'ko'
+            ? '서버에 저장하지 못해 이 화면에만 반영됐어요. 새로고침하면 사라져요.'
+            : 'Could not save to the server; the change only shows on this screen and will be lost on refresh.'
+        );
+      } else {
+        // 수정 창에서 뺀 이미지는 저장이 끝난 뒤에야 Storage에서 지운다 (저장 전에 취소해도 안전하도록)
+        removedUrls.forEach((url) => deleteProjectImage(url));
+        toast.success(
+          editingIndex !== null
+            ? (lang === 'ko' ? '프로젝트가 성공적으로 수정되었습니다.' : 'Project successfully updated.')
+            : (lang === 'ko' ? '새 프로젝트가 추가되었습니다.' : 'New project added.')
+        );
+      }
       setEditingIndex(null);
       setIsModalOpen(false);
     } catch (error) {
